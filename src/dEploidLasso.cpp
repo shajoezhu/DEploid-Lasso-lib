@@ -66,24 +66,28 @@ DEploidLASSO::~DEploidLASSO(){
 
 }
 
-DEploidLASSO::DEploidLASSO(){
 
-}
+//DEploidLASSO::DEploidLASSO(){
+
+//}
+
+
 DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsaf){
+    cout<< "Matrix size = "<< x.size() << " " << x[0].size() << endl;
+    cout<< "Vector length = " << wsaf.size() << endl;
+
     // Initialize
     this->nObs_ = wsaf.size();
     this->initialization();
 
-    this->lambda = vector <double> (0.0, 100);
+    this->lambda = vector <double> (100, 0.0);
     for ( size_t i = 0; i < 100; i++){
         this->lambda[i] = 1.0 / (2.0+(double)i);
-
         // Given lambda[i], solve for currentBeta
-
-
-
+        vector <double> currentBeta = this->solveBetaGivenLabmda( x, wsaf, this->lambda[i]);
+        beta.push_back(currentBeta);
     }
-
+    cout<<"beta.size = "<< beta.size() <<endl;
 }
 
 
@@ -91,4 +95,11 @@ void DEploidLASSO::initialization(){
     this->maxIteration_ = 100;
     this->realTol_ = 1e-4;
     this->absTol_ = 1e-4;
+}
+
+
+vector < double > DEploidLASSO::solveBetaGivenLabmda(vector < vector <double> > &x, vector < double > &wsaf, double lambda){
+    vector <double> ret;
+
+    return ret;
 }

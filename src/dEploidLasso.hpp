@@ -38,7 +38,7 @@ class DEploidLASSO{
   friend class TestDEploidLASSO;
 #endif
   public:
-    DEploidLASSO();
+    //DEploidLASSO();
     DEploidLASSO(vector < vector <double> > &x, // nObs x nVariable
                  vector < double > &wsaf);
     ~DEploidLASSO();
@@ -48,12 +48,13 @@ class DEploidLASSO{
     double realTol_;
     double absTol_;
 
+    vector < double > solveBetaGivenLabmda(vector < vector <double> > &x, vector < double > &wsaf, double lambda);
 
     void initialization();
     size_t nObs_;
     vector < double > lambda; // size of
     vector < vector <double> > beta;
-    vector <double> currentBeta;
+    //vector <double> currentBeta;
     vector < double > devRatio;
     vector < int > df;
 };
