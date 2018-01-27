@@ -24,7 +24,7 @@
  */
 
 #include "dEploidLasso.hpp"
-#include<string>
+#include <string>
 #include <fstream>      // std::ifstream
 
 TxtReader::TxtReader(const char inchar[]){
@@ -61,7 +61,6 @@ TxtReader::TxtReader(const char inchar[]){
 }
 
 
-
 DEploidLASSO::~DEploidLASSO(){
 
 }
@@ -73,33 +72,49 @@ DEploidLASSO::~DEploidLASSO(){
 
 
 DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsaf){
+    // TODO
+    // check for x size
+
     cout<< "Matrix size = "<< x.size() << " " << x[0].size() << endl;
     cout<< "Vector length = " << wsaf.size() << endl;
 
     // Initialize
-    this->nObs_ = wsaf.size();
     this->initialization();
 
-    this->lambda = vector <double> (100, 0.0);
-    for ( size_t i = 0; i < 100; i++){
+    for ( size_t i = 0; i < this->lambda.size(); i++){
         this->lambda[i] = 1.0 / (2.0+(double)i);
-        // Given lambda[i], solve for currentBeta
-        vector <double> currentBeta = this->solveBetaGivenLabmda( x, wsaf, this->lambda[i]);
-        beta.push_back(currentBeta);
+        LASSOgivenLambda currentLasso( x, wsaf, this->lambda[i]);
+        this->beta.push_back(currentLasso.beta);
+        this->intercept.push_back(currentLasso.intercept);
+        this->df.push_back(currentLasso.df);
+        this->devRatio.push_back(currentLasso.devRatio);
     }
     cout<<"beta.size = "<< beta.size() <<endl;
 }
 
 
-void DEploidLASSO::initialization(){
-    this->maxIteration_ = 100;
-    this->realTol_ = 1e-4;
-    this->absTol_ = 1e-4;
+void DEploidLASSO::initialization(size_t nLambda){
+    this->lambda = vector <double> (nLambda, 0.0);
+    this->intercept = vector <double> (nLambda, 0.0);
+    this->devRatio = vector <double> (nLambda, 0.0);
+    this->df = vector <int> (nLambda, 0);
 }
 
 
-vector < double > DEploidLASSO::solveBetaGivenLabmda(vector < vector <double> > &x, vector < double > &wsaf, double lambda){
-    vector <double> ret;
+LASSOgivenLambda::LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda){
+    size_t nObs = x.size();
+    this->initialization(nObs);
 
-    return ret;
+}
+
+void LASSOgivenLambda::initialization(size_t nObs){
+    this->maxIteration_ = 100;
+    this->realTol_ = 1e-4;
+    this->absTol_ = 1e-4;
+
+    this->nObs_ = nObs;
+    this->beta = vector <double> (nObs, 0.0);
+    this->df = 0;
+    this->devRatio = 0.0;
+    this->intercept = 0.0;
 }

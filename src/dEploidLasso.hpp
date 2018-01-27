@@ -33,6 +33,80 @@
 
 using namespace std;
 
+template <typename T>
+vector <T> matrixTimesVec( vector < vector < T > > &x, vector <double> &b ){
+    vector <double> ret (x.size(), 0.0);
+    for ( size_t i = 0; i < x.size(); i++ ){
+        for ( size_t k = 0; k < x[i].size(); k++){
+            ret[i] += x[i][k] * b[k];
+        }
+    }
+    return ret;
+}
+
+
+template <typename T>
+vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
+    assert(vecA.size() == vecB.size());
+    vector <T> difference (vecA.size(), (T)0);
+    for ( size_t i = 0; i < vecA.size(); i++ ){
+        difference[i] = vecA[i] - vecB[i];
+    }
+    return difference;
+}
+
+
+template <typename T>
+vector <T> vecSum ( vector<T> &vecA, vector<T> &vecB ){
+    assert(vecA.size() == vecB.size());
+    vector <T> tmpSum (vecA.size(), (T)0);
+    for ( size_t i = 0; i < vecA.size(); i++ ){
+        tmpSum[i] = vecA[i] + vecB[i];
+    }
+    return tmpSum;
+}
+
+
+template <typename T>
+vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
+    assert(vecA.size() == vecB.size());
+    vector <T> tmpProd (vecA.size(), (T)0);
+    for ( size_t i = 0; i < vecA.size(); i++ ){
+        tmpProd[i] = vecA[i] * vecB[i];
+    }
+    return tmpProd;
+}
+
+
+template <typename T>
+T sumOfVec( vector <T>& array ){
+    T tmp = 0;
+    for (auto const& value: array){
+        tmp += value;
+    }
+    return tmp;
+}
+
+class LASSOgivenLambda{
+  friend class DEploidLASSO;
+  private:
+    int maxIteration_;
+    double realTol_;
+    double absTol_;
+
+    size_t nObs_;
+    void initialization(size_t nObs);
+    vector <double> beta;
+    //double lambda; // size of nLambda
+    double devRatio;
+    double intercept;
+    int df;
+    LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda);
+    ~LASSOgivenLambda(){}
+};
+
+
+
 class DEploidLASSO{
 #ifdef UNITTEST
   friend class TestDEploidLASSO;
@@ -44,19 +118,14 @@ class DEploidLASSO{
     ~DEploidLASSO();
 
   private:
-    int maxIteration_;
-    double realTol_;
-    double absTol_;
-
-    vector < double > solveBetaGivenLabmda(vector < vector <double> > &x, vector < double > &wsaf, double lambda);
-
-    void initialization();
-    size_t nObs_;
-    vector < double > lambda; // size of
+    void initialization(size_t nLambda = 100);
     vector < vector <double> > beta;
-    //vector <double> currentBeta;
+    vector < double > lambda; // size of nLambda
     vector < double > devRatio;
+    vector < double > intercept;
     vector < int > df;
+    double nulldev_;
+    void computeNullDev();
 };
 
 
