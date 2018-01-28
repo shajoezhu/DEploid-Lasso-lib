@@ -27,6 +27,15 @@
 #include <string>
 #include <fstream>      // std::ifstream
 
+double computeNullDev(vector < vector <double> > &x, vector < double > &wsaf){
+    double ybar = sumOfVec(wsaf) / (double)wsaf.size();
+    vector <double> ybar_vec = vector <double> (wsaf.size(), ybar);
+    vector <double> diff = vecDiff(wsaf, ybar_vec);
+    vector <double> tmpSq = vecProd(diff, diff);
+    return (double)sumOfVec( tmpSq );
+}
+
+
 TxtReader::TxtReader(const char inchar[]){
     string fileName(inchar);
     ifstream in_file(inchar);
@@ -81,6 +90,8 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     // Initialize
     this->initialization();
 
+    this->nulldev_ = computeNullDev(x, wsaf);
+    cout << "nulldev = " << this->nulldev_ << endl;
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->lambda[i] = 1.0 / (2.0+(double)i);
         LASSOgivenLambda currentLasso( x, wsaf, this->lambda[i]);
@@ -103,18 +114,27 @@ void DEploidLASSO::initialization(size_t nLambda){
 
 LASSOgivenLambda::LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda){
     size_t nObs = x.size();
+    // check nObs > 1
+    size_t nVars = x[0].size();
     this->initialization(nObs);
 
 }
 
-void LASSOgivenLambda::initialization(size_t nObs){
-    this->maxIteration_ = 100;
-    this->realTol_ = 1e-4;
-    this->absTol_ = 1e-4;
 
+void LASSOgivenLambda::initialization(size_t nObs, size_t nVars){
+    this->maxIteration_ = 100000;
+    this->thresh_ = 1e-7;
+    this->absTol_ = 1e-4;
+    this->nVars_ = nVars;
+    this->dfmax = nVars_ + 1
+//pmax = min(dfmax * 2+20, nvars)
     this->nObs_ = nObs;
     this->beta = vector <double> (nObs, 0.0);
     this->df = 0;
     this->devRatio = 0.0;
     this->intercept = 0.0;
+
+    this->vp = vector <double> (nVars, 1.0);
+    this->vq = vector <double> (nVars, 1.0); // For now ...
+
 }

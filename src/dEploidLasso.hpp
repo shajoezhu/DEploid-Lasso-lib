@@ -47,7 +47,7 @@ vector <T> matrixTimesVec( vector < vector < T > > &x, vector <double> &b ){
 
 template <typename T>
 vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
-    assert(vecA.size() == vecB.size());
+    //assert(vecA.size() == vecB.size());
     vector <T> difference (vecA.size(), (T)0);
     for ( size_t i = 0; i < vecA.size(); i++ ){
         difference[i] = vecA[i] - vecB[i];
@@ -69,7 +69,7 @@ vector <T> vecSum ( vector<T> &vecA, vector<T> &vecB ){
 
 template <typename T>
 vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
-    assert(vecA.size() == vecB.size());
+    //assert(vecA.size() == vecB.size());
     vector <T> tmpProd (vecA.size(), (T)0);
     for ( size_t i = 0; i < vecA.size(); i++ ){
         tmpProd[i] = vecA[i] * vecB[i];
@@ -87,20 +87,27 @@ T sumOfVec( vector <T>& array ){
     return tmp;
 }
 
+
+double computeNullDev(vector < vector <double> > &x, vector < double > &wsaf);
+
+
 class LASSOgivenLambda{
   friend class DEploidLASSO;
   private:
     int maxIteration_;
-    double realTol_;
+    double thresh_;
     double absTol_;
 
     size_t nObs_;
+    size_t nVars_;
     void initialization(size_t nObs);
     vector <double> beta;
     //double lambda; // size of nLambda
     double devRatio;
     double intercept;
     int df;
+    vector <double> vp; // penalty
+    vector <double> vq;
     LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda);
     ~LASSOgivenLambda(){}
 };
@@ -125,7 +132,7 @@ class DEploidLASSO{
     vector < double > intercept;
     vector < int > df;
     double nulldev_;
-    void computeNullDev();
+
 };
 
 

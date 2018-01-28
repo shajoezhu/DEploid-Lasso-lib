@@ -6,3 +6,6 @@ a.out: lasso.o main.cpp
 
 lasso.o: src/dEploidLasso.cpp src/dEploidLasso.hpp
 	$(CPP) $(CFLAGS) -c src/dEploidLasso.cpp -o lasso.o
+
+clean:
+	rm a.out *.
