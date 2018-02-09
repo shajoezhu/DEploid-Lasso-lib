@@ -100,7 +100,8 @@ class LASSOgivenLambda{
 
     size_t nObs_;
     size_t nVars_;
-    void initialization(size_t nObs);
+    size_t dfmax_;
+    void initialization(size_t nObs, size_t nVars);
     vector <double> beta;
     //double lambda; // size of nLambda
     double devRatio;
@@ -108,7 +109,7 @@ class LASSOgivenLambda{
     int df;
     vector <double> vp; // penalty
     vector <double> vq;
-    LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda);
+    LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda, vector < double > ju, vector <double> g, vector <double> &ix);
     ~LASSOgivenLambda(){}
 };
 
@@ -126,13 +127,20 @@ class DEploidLASSO{
 
   private:
     void initialization(size_t nLambda = 100);
+    size_t nObs_;
+    size_t nVars_;
     vector < vector <double> > beta;
     vector < double > lambda; // size of nLambda
     vector < double > devRatio;
     vector < double > intercept;
+    vector <double> ix;
     vector < int > df;
     double nulldev_;
-
+    void checkVariables(vector < vector <double> > &x);
+    vector <double> ju;
+    void productOfxy(vector < vector <double> > &x, // nObs x nVariable
+                 vector < double > &wsaf);
+    vector <double> g;
 };
 
 
