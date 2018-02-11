@@ -163,6 +163,60 @@ void DEploidLASSO::checkVariables(vector < vector <double> > &x){
 }
 
 
+void DEploidLASSO::standarization(){
+  // compute w and v
+
+  // standarize x
+
+  // standarize y
+
+
+10710 do 10711 j=1,ni
+            if(ju(j).eq.0)goto 10711
+            xm(j)=dot_product(w,x(:,j))
+            x(:,j)=v*(x(:,j)-xm(j))
+            xv(j)=dot_product(x(:,j),x(:,j))
+            if(isd.gt.0) xs(j)=sqrt(xv(j))
+      10711 continue
+10712 continue
+
+      if(isd .ne. 0)goto 10731
+      xs=1.0
+      goto 10741
+10731 continue
+10750 do 10751 j=1,ni
+      if(ju(j).eq.0)goto 10751
+      x(:,j)=x(:,j)/xs(j)
+10751 continue
+10752 continue
+      xv=1.0
+10741 continue
+10721 continue
+
+
+
+
+
+}
+
+
+void DEploidLASSO::standarizeX(vector <double> w
+                               vector <double> v){
+
+}
+
+void DEploidLASSO::standarizeY(vector <double> w
+                               vector <double> v){
+
+      vector <double> weightedY = vecProd(w, stdrzdY);
+      stdrzdY=vecProd(v, vecDiff(stdrzdY-weightedY));
+      double ys=sqrt(sumOfVec(vecProd(stdrzdY,stdrzdY)));
+      for (size_t i = 0; i < nObs_; i++){
+          stdrzdY[i] /= ys;
+      }
+}
+
+
 void DEploidLASSO::initialization(size_t nLambda){
     this->lambda = vector <double> (nLambda, 0.0);
     this->intercept = vector <double> (nLambda, 0.0);

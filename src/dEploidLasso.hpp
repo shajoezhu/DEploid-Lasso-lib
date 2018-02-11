@@ -88,7 +88,7 @@ T sumOfVec( vector <T>& array ){
 }
 
 
-double computeNullDev(vector < vector <double> > &x, vector < double > &wsaf);
+double computeNullDev(vector < vector <double> > &x, vector < double > &y);
 
 
 class LASSOgivenLambda{
@@ -109,7 +109,7 @@ class LASSOgivenLambda{
     int df;
     vector <double> vp; // penalty
     vector <double> vq;
-    LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda, vector < double > ju, vector <double> g, vector <double> &ix);
+    LASSOgivenLambda(vector < vector <double> > &x, vector < double > &y, double lambda, vector < double > ju, vector <double> g, vector <double> &ix);
     ~LASSOgivenLambda(){}
 };
 
@@ -122,11 +122,12 @@ class DEploidLASSO{
   public:
     //DEploidLASSO();
     DEploidLASSO(vector < vector <double> > &x, // nObs x nVariable
-                 vector < double > &wsaf);
+                 vector < double > &y);
     ~DEploidLASSO();
 
   private:
     void initialization(size_t nLambda = 100);
+    void standarization();
     size_t nObs_;
     size_t nVars_;
     vector < vector <double> > beta;
@@ -139,7 +140,7 @@ class DEploidLASSO{
     void checkVariables(vector < vector <double> > &x);
     vector <double> ju;
     void productOfxy(vector < vector <double> > &x, // nObs x nVariable
-                 vector < double > &wsaf);
+                 vector < double > &y);
     vector <double> g;
 };
 
