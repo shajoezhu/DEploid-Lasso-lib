@@ -39,3 +39,47 @@ myfit$dev.ratio[idx]
 
 ytmp = as.matrix(cbind(0,panel)) %*% a$x
 1 - sum((y - ytmp)^2)/nulldev
+
+
+######################### Normalizing y #######################
+y = wsaf
+w = rep(1, length(wsaf))
+w=w/sum(w)
+v=sqrt(w)
+
+ym=sum(w*y)
+y=v*(y-ym)
+ys=sqrt(sum(y*y))
+y=y/ys
+
+####### my calculation
+ym = mean(wsaf)
+ytmp = (wsaf - ym)
+ytmp / sqrt(sum(ytmp^2))
+
+
+########################## Normalizing x #####################
+
+
+#10710 do 10711 j=1,ni
+#            if(ju(j).eq.0)goto 10711
+#            xm(j)=dot_product(w,x(:,j))
+#            x(:,j)=v*(x(:,j)-xm(j))
+#            xv(j)=dot_product(x(:,j),x(:,j))
+#            if(isd.gt.0) xs(j)=sqrt(xv(j))
+#      10711 continue
+#      10712 continue
+
+#      if(isd .ne. 0)goto 10731
+#            xs=1.0
+#            goto 10741
+#      10731 continue
+
+#      10750 do 10751 j=1,ni
+#            if(ju(j).eq.0)goto 10751
+#            x(:,j)=x(:,j)/xs(j)
+#      10751 continue
+#      10752 continue
+#            xv=1.0
+#      10741 continue
+#10721 continue

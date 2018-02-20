@@ -1,5 +1,6 @@
 CPP = g++
-CFLAGS = -std=c++0x -Isrc/ -O3 -g -Wall -DNDEBUG
+#CFLAGS = -std=c++0x -Isrc/ -O3 -g -Wall -DNDEBUG
+CFLAGS = -std=c++0x -Isrc/ -O3 -g -Wall
 
 a.out: lasso.o main.cpp
 	$(CPP) $(CFLAGS) -o a.out lasso.o main.cpp
@@ -8,4 +9,4 @@ lasso.o: src/dEploidLasso.cpp src/dEploidLasso.hpp
 	$(CPP) $(CFLAGS) -c src/dEploidLasso.cpp -o lasso.o
 
 clean:
-	rm a.out *.
+	rm a.out *.o

@@ -114,6 +114,13 @@ class LASSOgivenLambda{
 };
 
 
+struct standardizeVector {
+    vector <double> ret;
+    double xs;
+
+    standardizeVector(vector <double> vec);
+};
+
 
 class DEploidLASSO{
 #ifdef UNITTEST
@@ -127,9 +134,13 @@ class DEploidLASSO{
 
   private:
     void initialization(size_t nLambda = 100);
-    void standarization();
+    void standarization(vector < vector <double> > &x, vector < double > &y);
+
     size_t nObs_;
     size_t nVars_;
+
+    vector < vector <double> > standardized_x;
+    vector <double> standardized_y;
     vector < vector <double> > beta;
     vector < double > lambda; // size of nLambda
     vector < double > devRatio;
@@ -139,9 +150,11 @@ class DEploidLASSO{
     double nulldev_;
     void checkVariables(vector < vector <double> > &x);
     vector <double> ju;
-    void productOfxy(vector < vector <double> > &x, // nObs x nVariable
-                 vector < double > &y);
+    void productOfxy();
     vector <double> g;
+
+    vector <double> xs;
+    double ys;
 };
 
 
