@@ -97,6 +97,8 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
 
     this->standarization(x, wsaf);
 
+// TODO need to compute cl, it will be used later.
+
     this->productOfxy(); // TODO, needs work!!!!
 
     this->ix = vector <double> (nVars_, 0.0);
@@ -105,7 +107,7 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     cout << "nulldev = " << this->nulldev_ << endl;
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->lambda[i] = 1.0 / (2.0+(double)i);
-        LASSOgivenLambda currentLasso( x, wsaf, this->lambda[i], this->ju, this->g, this->ix);
+        LASSOgivenLambda currentLasso( this->standardized_x_transposed, this->standardized_y, this->lambda[i], this->ju, this->g, this->ix);
         this->beta.push_back(currentLasso.beta);
         this->intercept.push_back(currentLasso.intercept);
         this->df.push_back(currentLasso.df);
@@ -128,11 +130,12 @@ void DEploidLASSO::productOfxy(){
         if (this->ju[j] == 0){
             break;
         }
-        double tmpSum = 0;
-        for ( size_t i = 0; i < this->nObs_; i++ ){
-            tmpSum += standardized_y[i] * standardized_x[i][j];
-        }
-        this->g[j] = std::abs(tmpSum);
+        //double tmpSum = 0;
+        //for ( size_t i = 0; i < this->nObs_; i++ ){
+            //tmpSum += standardized_y[i] * standardized_x[i][j];
+        //}
+        vector <double> tmp = vecProd(standardized_y, standardized_x_transposed[j]);
+        this->g[j] = std::abs(sumOfVec(tmp));
     }
 
     assert(this->g.size() == nVars_);
@@ -170,23 +173,19 @@ void DEploidLASSO::checkVariables(vector < vector <double> > &x){
 
 void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double > &y){
     // standarize x
-    assert(standardized_x.size() == 0);
-    for (size_t j = 0; j < nObs_; j++){
-        standardized_x.push_back(vector<double> (nVars_, 0.0));
-    }
+    assert(standardized_x_transposed.size() == 0);
     for (size_t i = 0; i < nVars_; i++){
+        // Extract the ith variable
         vector <double> var_i;
         for ( size_t j = 0; j < this->nObs_; j++){
             var_i.push_back(x[j][i]);
         }
         standardizeVector vecX(var_i);
-        //vector <double> standarized_var = vecX.ret;
         xs.push_back(vecX.xs);
-        for ( size_t j = 0; j < this->nObs_; j++){
-            standardized_x[j][i] = vecX.ret[j];
-        }
-
+        standardized_x_transposed.push_back(vecX.ret);
     }
+    assert(standardized_x_transposed.size() == nVars_);
+
     // standarize y
     standardizeVector vecY(y);
     standardized_y = vecY.ret;
@@ -226,60 +225,59 @@ void DEploidLASSO::initialization(size_t nLambda){
 }
 
 
-LASSOgivenLambda::LASSOgivenLambda(vector < vector <double> > &x, vector < double > &wsaf, double lambda, vector < double > ju, vector <double> g, vector <double> &ix){
+LASSOgivenLambda::LASSOgivenLambda(vector < vector <double> > &x, // x is transposed, nVars x nObs
+    vector < double > &y, // length of nObs
+    double lambda, vector < double > ju, vector <double> g, vector <double> &ix){
     //cout << lambda << endl;
-    size_t nObs = x.size();
-    // check nObs > 1
-    size_t nVars = x[0].size();
-    this->initialization(nObs, nVars);
+    assert(x[0].size() > 0);
+    assert(x.size() > 0);
+    this->initialization(x[0].size(),     //nObs
+                         x.size() //nVars
+                         );
 
-    vector <double> vp(nVars, 1.0);
+    vector <double> vp(this->nVars_, 1.0);
 
-// ulam is user defined lambdas...
-// no = number of observations
-// ni = number of predictor variables
+    // ulam is user defined lambdas...
+    // no = number of observations
+    // ni = number of predictor variables
 
-//c   parm = penalty member index (0 <= parm <= 1)
-//c        = 0.0 => ridge
-//c        = 1.0 => lasso
-double beta = 1.0;
-double bta=beta; // lasso part
-double omb=1.0-bta; // ridge part
-double rsq=0.0; //TODO, just replace as rsq0
+    //c   parm = penalty member index (0 <= parm <= 1)
+    //c        = 0.0 => ridge
+    //c        = 1.0 => lasso
+    double beta = 1.0;
+    double bta=beta; // lasso part
+    double omb=1.0-bta; // ridge part
+    double rsq=0.0; //TODO, just replace as rsq0
 
-
+    // Initializations
     double alm0 = 0.0;
     double alm  = lambda;
     double flmin = 1.0; // this is defined in glmnet.R
 
+    //dem=alm*omb
+    //ab=alm*bta
+    //rsq0=rsq
+    //jz=1
+    //tlam=bta*(2.0*alm-alm0)
 
+    double dem=alm*omb;
+    double ab=alm*bta;
+    double rsq0=rsq;
+    double jz=1;
+    double tlam=bta*(2.0*alm-alm0);
 
-                        //dem=alm*omb
-                        //ab=alm*bta
-                        //rsq0=rsq
-                        //jz=1
-                        //tlam=bta*(2.0*alm-alm0)
+    //10860 do 10861 k=1,ni
+                //if(ix(k).eq.1)goto 10861
+                //if(ju(k).eq.0)goto 10861
+                //if(g(k).gt.tlam*vp(k)) ix(k)=1
+          //10861 continue
+    //10862 continue
 
-                  //10860 do 10861 k=1,ni
-                              //if(ix(k).eq.1)goto 10861
-                              //if(ju(k).eq.0)goto 10861
-                              //if(g(k).gt.tlam*vp(k)) ix(k)=1
-                        //10861 continue
-                  //10862 continue
-
-                double dem=alm*omb;
-                  double      ab=alm*bta;
-                    double    rsq0=rsq;
-                     double   jz=1;
-                     double   tlam=bta*(2.0*alm-alm0);
-
-                  for ( size_t k = 0; k < nVars; k++){
-                      if ((ix[k] != 1) & (ju[k] != 0)){
-                         if ( g[k] > (tlam*vp[k]) ){
-                             ix[k] = 1.0;
-                         }
-                      }
-                  }
+    for ( size_t k = 0; k < this->nVars_; k++){
+        if (ix[k] == 1) {break;}
+        if (ju[k] == 0) {break;}
+        if (g[k] > (tlam*vp[k])){ix[k] = 1.0;}
+    }
 
 
 
@@ -311,6 +309,15 @@ double rsq=0.0; //TODO, just replace as rsq0
                               //dlx=max(xv(k)*del**2,dlx)
                         //10891 continue
                   //10892 continue
+
+                  //for (size_t k = 0; k < nVars_; k++){
+                      //if (ix[k] == 0){ break; }
+                      //gk = vecProd(y,
+                  //}
+
+
+
+
 
                         //if(nin.gt.nx)goto 10872
                         //if(dlx .ge. thr)goto 10931

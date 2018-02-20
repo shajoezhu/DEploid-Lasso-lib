@@ -139,7 +139,7 @@ class DEploidLASSO{
     size_t nObs_;
     size_t nVars_;
 
-    vector < vector <double> > standardized_x;
+    vector < vector <double> > standardized_x_transposed; // nVariable x nObs
     vector <double> standardized_y;
     vector < vector <double> > beta;
     vector < double > lambda; // size of nLambda
