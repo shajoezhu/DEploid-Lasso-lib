@@ -111,15 +111,14 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     cout << "nulldev = " << this->nulldev_ << endl;
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->setLambdaCurrent(1.0 / (2.0+(double)i));
-        this->lassoGivenLambda(this->lambda[i], this->ju, this->g, this->ix);
-        this->beta.push_back(currentLasso.beta);
-        this->intercept.push_back(currentLasso.intercept);
-        this->df.push_back(currentLasso.df);
-        this->devRatio.push_back(currentLasso.devRatio);
+        this->lassoGivenLambda(this->ju, this->g, this->ix);
 
         // FETCH AND UPDATE THE CURRENT INFERENCE RESULTS
+        this->beta.push_back(betaCurrent);
         this->lambda[i] = lambdaCurrent();
-
+        this->intercept[i] = interceptCurrent();
+        this->devRatio[i] = rsqCurrent();
+        this->df[i] = dfCurrent();
     }
     cout<<"beta.size = "<< beta.size() <<endl;
 }
@@ -210,7 +209,6 @@ void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double
 }
 
 
-
 void DEploidLASSO::initialization(size_t nLambda){
     this->lambda = vector <double> (nLambda, 0.0);
     this->intercept = vector <double> (nLambda, 0.0);
@@ -220,8 +218,8 @@ void DEploidLASSO::initialization(size_t nLambda){
     this->maxIteration_ = 100000;
     this->thresh_ = 1e-7;
     this->absTol_ = 1e-4;
-    this->nVars_ = nVars;
     this->dfmax_ = nVars_ + 1;
+    //this->nVars_ = nVars;
     //pmax = min(dfmax * 2+20, nvars)
     //this->nObs_ = nObs;
 
@@ -259,7 +257,6 @@ double DEploidLASSO::computeNullDev(vector < vector <double> > &x, vector < doub
 }
 
 
-
 void DEploidLASSO::lassoGivenLambda(vector < double > ju, vector <double> g, vector <double> &ix){
     /* USE THE FOLLOWING VARIABLES
      *
@@ -275,9 +272,9 @@ void DEploidLASSO::lassoGivenLambda(vector < double > ju, vector <double> g, vec
     /*
      * INITIALIZATION
      */
-    this->betaCurrent = vector <double> (nObs, 0.0);
-    this->df = 0;
-    this->devRatio = 0.0;
+    this->betaCurrent = vector <double> (this->nVars_, 0.0);
+    this->setDfCurrent(0);
+    this->setRsqCurrent(0.0);
     this->setInterceptCurrent(0.0);
 
     //this->initialization(x[0].size(),     //nObs

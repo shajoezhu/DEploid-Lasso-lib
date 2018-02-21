@@ -185,11 +185,17 @@ class DEploidLASSO{
     void setLambdaCurrent ( const double setTo ){ this->lambdaCurrent_ = setTo; }
     double lambdaCurrent() const { return this->lambdaCurrent_; }
 
-    double devRatioCurrent;
+    double rsqCurrent_;
+    void setRsqCurrent ( const double setTo ){ this->rsqCurrent_ = setTo; }
+    double rsqCurrent() const { return this->rsqCurrent_; }
+
     double interceptCurrent_;
     void setInterceptCurrent ( const double setTo ){ this->interceptCurrent_ = setTo; }
     double interceptCurrent() const { return this->interceptCurrent_; }
-    int dfCurrent;
+
+    int dfCurrent_;
+    void setDfCurrent ( const double setTo ){ this->dfCurrent_ = setTo; }
+    double dfCurrent() const { return this->dfCurrent_; }
 
 };
 
