@@ -25,8 +25,8 @@
 
 #include <vector>
 #include <iostream>
-//#include <exceptions.hpp>
 #include <sstream>
+//#include <exceptions.hpp>
 
 #ifndef LASSO
 #define LASSO
@@ -88,29 +88,41 @@ T sumOfVec( vector <T>& array ){
 }
 
 
-double computeNullDev(vector < vector <double> > &x, vector < double > &y);
+//class LASSOgivenLambda{
+  //friend class DEploidLASSO;
+  //private:
+    //int maxIteration_;
+    //double thresh_;
+    //double absTol_;
+
+    //size_t nObs_;
+    //size_t nVars_;
+    //size_t dfmax_;
+    //void initialization(size_t nObs, size_t nVars);
+    //vector <double> beta;
+    ////double lambda; // size of nLambda
+    //double devRatio;
+    //double intercept;
+    //int df;
+    //vector <double> vp; // penalty
+    //vector <double> vq;
+    //LASSOgivenLambda(vector < vector <double> > &x, vector < double > &y, double lambda, vector < double > ju, vector <double> g, vector <double> &ix);
+    //~LASSOgivenLambda(){}
+//};
 
 
-class LASSOgivenLambda{
+class TxtReader{
   friend class DEploidLASSO;
-  private:
-    int maxIteration_;
-    double thresh_;
-    double absTol_;
 
-    size_t nObs_;
-    size_t nVars_;
-    size_t dfmax_;
-    void initialization(size_t nObs, size_t nVars);
-    vector <double> beta;
-    //double lambda; // size of nLambda
-    double devRatio;
-    double intercept;
-    int df;
-    vector <double> vp; // penalty
-    vector <double> vq;
-    LASSOgivenLambda(vector < vector <double> > &x, vector < double > &y, double lambda, vector < double > ju, vector <double> g, vector <double> &ix);
-    ~LASSOgivenLambda(){}
+  public:
+    vector < vector < double > > matrix;
+    vector < double > vec;
+    TxtReader (const char inchar[]);
+    //virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
+    //void readFromFileBase( const char inchar[] );
+    ~TxtReader(){ };
+
+  private:
 };
 
 
@@ -133,43 +145,53 @@ class DEploidLASSO{
     ~DEploidLASSO();
 
   private:
+
+  // FUNCTIONS
+   // COMMON
     void initialization(size_t nLambda = 100);
     void standarization(vector < vector <double> > &x, vector < double > &y);
+    void checkVariables(vector < vector <double> > &x);
+    void productOfxy();
+    double computeNullDev(vector < vector <double> > &x, vector < double > &y);
 
+   // FOR EACH LAMBDA UPDATE
+    void lassoGivenLambda(vector < double > ju, vector <double> g, vector <double> &ix);
+
+  // VARIABLES, GETTERS AND SETTERS
+   // COMMON
     size_t nObs_;
     size_t nVars_;
-
     vector < vector <double> > standardized_x_transposed; // nVariable x nObs
     vector <double> standardized_y;
     vector < vector <double> > beta;
     vector < double > lambda; // size of nLambda
     vector < double > devRatio;
     vector < double > intercept;
-    vector <double> ix;
+    int maxIteration_;
+    double thresh_;
+    double absTol_;
     vector < int > df;
     double nulldev_;
-    void checkVariables(vector < vector <double> > &x);
     vector <double> ju;
-    void productOfxy();
     vector <double> g;
-
     vector <double> xs;
     double ys;
+    size_t dfmax_;
+    vector <double> ix;
+
+   // FOR EACH LAMBDA UPDATE
+    vector < double > betaCurrent;
+    double lambdaCurrent_;
+    void setLambdaCurrent ( const double setTo ){ this->lambdaCurrent_ = setTo; }
+    double lambdaCurrent() const { return this->lambdaCurrent_; }
+
+    double devRatioCurrent;
+    double interceptCurrent_;
+    void setInterceptCurrent ( const double setTo ){ this->interceptCurrent_ = setTo; }
+    double interceptCurrent() const { return this->interceptCurrent_; }
+    int dfCurrent;
+
 };
 
-
-class TxtReader{
-  friend class DEploidLASSO;
-
-  public:
-    vector < vector < double > > matrix;
-    vector < double > vec;
-    TxtReader (const char inchar[]);
-    //virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
-    //void readFromFileBase( const char inchar[] );
-    ~TxtReader(){ };
-
-  private:
-};
 
 #endif
