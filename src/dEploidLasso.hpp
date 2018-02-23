@@ -128,7 +128,8 @@ class TxtReader{
 
 struct standardizeVector {
     vector <double> ret;
-    double xs;
+    double mean;
+    double stdv;
 
     standardizeVector(vector <double> vec);
 };
@@ -163,8 +164,11 @@ class DEploidLASSO{
     size_t nVars_;
     vector < vector <double> > standardized_x_transposed; // nVariable x nObs
     vector <double> standardized_y;
-    vector < vector <double> > beta;
+    vector < vector <double> > beta; // nLambda x nVars
     vector < double > lambda; // size of nLambda
+    vector < size_t > indexArray;
+    vector < size_t > mm; // indicator, that kth variable is already in use
+    size_t nin; // number of variables in use
     vector < double > devRatio;
     vector < double > intercept;
     int maxIteration_;
@@ -174,13 +178,22 @@ class DEploidLASSO{
     double nulldev_;
     vector <double> ju;
     vector <double> g;
-    vector <double> xs;
-    double ys;
+    vector <double> x_mean;
+    vector <double> x_stdv;
+    double y_stdv;
+    double y_mean;
     size_t dfmax_;
     vector <double> ix;
+    int npass_;
+
+    double lowerLimit;
+    double upperLimit;
 
    // FOR EACH LAMBDA UPDATE
-    vector < double > betaCurrent;
+   // VARIABLES
+    vector < double > betaCurrent; // size of nVars
+    vector < double > coefficentCurrent; // size of nVars
+
     double lambdaCurrent_;
     void setLambdaCurrent ( const double setTo ){ this->lambdaCurrent_ = setTo; }
     double lambdaCurrent() const { return this->lambdaCurrent_; }
@@ -196,6 +209,17 @@ class DEploidLASSO{
     int dfCurrent_;
     void setDfCurrent ( const double setTo ){ this->dfCurrent_ = setTo; }
     double dfCurrent() const { return this->dfCurrent_; }
+
+    int ninCurrent_;
+    int iz, jz;
+   // FUNCTIONS
+    void computeIntercept();
+    void rescaleCoefficents();
+    void coefficentToBeta();
+    double updateAkReturnGk(size_t k, double ak, double ab);
+    double updateY(size_t k, double gk, double ak, double dlx);
+void updateWithNewVariables(double ab);
+void updateWithTheSameVariables(double ab);
 
 };
 
