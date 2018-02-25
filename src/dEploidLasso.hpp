@@ -28,6 +28,13 @@
 #include <sstream>
 //#include <exceptions.hpp>
 
+#ifndef NDEBUG
+#define dout std::cout << "   "
+#else
+#pragma GCC diagnostic ignored "-Wunused-value"
+#define dout 0 && std::cout
+#endif
+
 #ifndef LASSO
 #define LASSO
 
@@ -130,6 +137,7 @@ struct standardizeVector {
     vector <double> ret;
     double mean;
     double stdv;
+    double variance;
 
     standardizeVector(vector <double> vec);
 };
@@ -149,7 +157,7 @@ class DEploidLASSO{
 
   // FUNCTIONS
    // COMMON
-    void initialization(size_t nLambda = 100);
+    void initialization(size_t nLambda = 3);
     void standarization(vector < vector <double> > &x, vector < double > &y);
     void checkVariables(vector < vector <double> > &x);
     void productOfxy();
@@ -173,13 +181,14 @@ class DEploidLASSO{
     vector < double > intercept;
     int maxIteration_;
     double thresh_;
-    double absTol_;
+    //double absTol_;
     vector < int > df;
     double nulldev_;
     vector <double> ju;
     vector <double> g;
     vector <double> x_mean;
     vector <double> x_stdv;
+    vector <double> x_variance;
     double y_stdv;
     double y_mean;
     size_t dfmax_;
@@ -197,6 +206,9 @@ class DEploidLASSO{
     double lambdaCurrent_;
     void setLambdaCurrent ( const double setTo ){ this->lambdaCurrent_ = setTo; }
     double lambdaCurrent() const { return this->lambdaCurrent_; }
+    double lambdaCurrentLasso_;
+    void setLambdaCurrentLasso ( const double setTo ){ this->lambdaCurrentLasso_ = setTo; }
+    double lambdaCurrentLasso() const { return this->lambdaCurrentLasso_; }
 
     double rsqCurrent_;
     void setRsqCurrent ( const double setTo ){ this->rsqCurrent_ = setTo; }
@@ -216,10 +228,12 @@ class DEploidLASSO{
     void computeIntercept();
     void rescaleCoefficents();
     void coefficentToBeta();
-    double updateAkReturnGk(size_t k, double ak, double ab);
+    void updateCoefficient(size_t k, double previousCoefficentValue, double gk);
     double updateY(size_t k, double gk, double ak, double dlx);
-void updateWithNewVariables(double ab);
-void updateWithTheSameVariables(double ab);
+    void updateWithNewVariables();
+    void updateWithTheSameVariables();
+    double computeGk(vector<double> &y, vector<double> &x);
+    double computeGk_abs(vector<double> &y, vector<double> &x);
 
 };
 

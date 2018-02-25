@@ -54,6 +54,7 @@ subroutine standard1 (no,ni,x,y,w,isd,intr,ju,xm,xs,ym,ys,xv,jerr)
             x(:,j)=x(:,j)/xs(j)
       10751 continue
       10752 continue
+
             xv=1.0
       10741 continue
 10721 continue

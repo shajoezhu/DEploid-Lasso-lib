@@ -106,6 +106,7 @@ subroutine elnet2(beta,ni,ju,vp,cl,y,no,ne,nx,x,nlam,flmin,ulam,thr,maxit,xv,  l
 
                         if(nin.gt.nx)goto 10872
                         if(dlx .ge. thr)goto 10931
+
                         ixx=0
 
                   10940 do 10941 k=1,ni
@@ -122,6 +123,7 @@ subroutine elnet2(beta,ni,ju,vp,cl,y,no,ne,nx,x,nlam,flmin,ulam,thr,maxit,xv,  l
                         if(ixx.eq.1) go to 10880
                         goto 10872
                   10931 continue
+
                         if(nlp .le. maxit)goto 10981
                         jerr=-m
                         return

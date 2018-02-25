@@ -7,10 +7,14 @@ panel = read.table("panel_chrom1.txt", header=F)
 wsaf = read.table("PG0402-C_chrom1.wsaf", header=F)$V1
 myfit = glmnet( x = as.matrix(panel),
                 y = wsaf,
-                lambda = 1/seq(2, 100, length.out = 100),
+                lambda = 1/seq(2, 4, length.out = 3),
+#                lambda = 1/seq(2, 100, length.out = 3),
                 type.gaussian = "naive",
                 lower.limits= 0)
 
+x = as.matrix(panel)
+y = (wsaf-mean(wsaf))/sd(wsaf)
+abs(apply(x, 2, function(tmp){sum((tmp-mean(tmp))/sd(tmp)*y)}))
 
 lambdas = 1/seq(2, 100, length.out = 100)
 results = list()
