@@ -164,7 +164,7 @@ class DEploidLASSO{
     double computeNullDev(vector < vector <double> > &x, vector < double > &y);
 
    // FOR EACH LAMBDA UPDATE
-    void lassoGivenLambda(vector < double > ju, vector <double> g, vector <double> &ix);
+    void lassoGivenLambda();
 
   // VARIABLES, GETTERS AND SETTERS
    // COMMON
@@ -235,6 +235,9 @@ class DEploidLASSO{
     double computeGk(vector<double> &y, vector<double> &x);
     double computeGk_abs(vector<double> &y, vector<double> &x);
 
+   // Debug tools
+    bool print_normalized_struff();
+    bool print_initial_gk();
 };
 
 

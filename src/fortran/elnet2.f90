@@ -77,6 +77,7 @@ subroutine elnet2(beta,ni,ju,vp,cl,y,no,ne,nx,x,nlam,flmin,ulam,thr,maxit,xv,  l
 
                   10870 continue
                   10871 continue
+
                         if(iz*jz.ne.0) go to 10360
                   10880 continue
                         nlp=nlp+1
@@ -129,7 +130,9 @@ subroutine elnet2(beta,ni,ju,vp,cl,y,no,ne,nx,x,nlam,flmin,ulam,thr,maxit,xv,  l
                         return
                   10981 continue
                   10360 continue
+
                         iz=1
+
                   10990 continue
                   10991 continue
                         nlp=nlp+1
