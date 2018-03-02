@@ -12,6 +12,10 @@ myfit = glmnet( x = as.matrix(panel),
                 type.gaussian = "naive",
                 lower.limits= 0)
 
+panel = read.table("panel_chrom1.txt", header=F)
+wsaf = read.table("PG0402-C_chrom1.wsaf", header=F)$V1
+myfit = glmnet( x = as.matrix(panel), y = wsaf,  lambda = 1/seq(3, 5, length.out = 3),  type.gaussian = "naive", lower.limits= 0, maxit = 218)
+
 x = as.matrix(panel)
 y = (wsaf-mean(wsaf))/sd(wsaf)
 abs(apply(x, 2, function(tmp){sum((tmp-mean(tmp))/sd(tmp)*y)}))

@@ -35,17 +35,17 @@
 
 
 bool DEploidLASSO::print_normalized_struff(){
-    dout<<"First 10 elements of normalized x"<<endl;
-    for (size_t i = 0; i < nVars_; i++){
+    dout<<"First 5 elements of normalized x 5 variables"<<endl;
+    for (size_t i = 0; i < min((size_t)5, nVars_); i++){
         vector<double> xx = this->standardized_x_transposed[i];
-        for (size_t j = 0; j < xx.size(); j++){
+        for (size_t j = 0; j < min((size_t)5, xx.size()); j++){
             dout << std::setw(9) << xx[j] <<", ";
         }
     }
     dout<<endl;
 
-    dout<<"First 10 elements of normalized y"<<endl;
-    for (size_t i = 0; i < 10; i++){
+    dout<<"First 5 elements of normalized y"<<endl;
+    for (size_t i = 0; i < min((size_t)5, nObs_) ; i++){
         dout << std::setw(8) << this->standardized_y[i] <<", ";
     }
     dout<<endl;
@@ -56,8 +56,8 @@ bool DEploidLASSO::print_normalized_struff(){
 
 bool DEploidLASSO::print_initial_gk(){
     dout << "Initial gk:"<<endl;
-    for (double gk : g){
-        dout << gk << ", ";
+    for (size_t i = 0; i < min((size_t)5, nVars_); i++){
+        dout << g[i] << ", ";
     }
     dout << endl;
 

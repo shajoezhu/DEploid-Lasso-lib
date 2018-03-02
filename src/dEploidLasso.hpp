@@ -157,7 +157,7 @@ class DEploidLASSO{
 
   // FUNCTIONS
    // COMMON
-    void initialization(size_t nLambda = 3);
+    void initialization(size_t nLambda = 100);
     void standarization(vector < vector <double> > &x, vector < double > &y);
     void checkVariables(vector < vector <double> > &x);
     void productOfxy();
@@ -227,7 +227,7 @@ class DEploidLASSO{
     void setDfCurrent ( const double setTo ){ this->dfCurrent_ = setTo; }
     double dfCurrent() const { return this->dfCurrent_; }
 
-    int ninCurrent_;
+    //int ninCurrent_;
     int iz, jz;
    // FUNCTIONS
     void computeIntercept();
@@ -241,6 +241,7 @@ class DEploidLASSO{
     double computeGk(vector<double> &y, vector<double> &x);
     double computeGk_abs(vector<double> &y, vector<double> &x);
     void chooseVariables(double tlam);
+    double rechooseVariables();
 
    // Debug tools
     bool print_normalized_struff();

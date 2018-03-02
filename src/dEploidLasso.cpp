@@ -27,8 +27,9 @@
 #include <string>
 #include <fstream>      // std::ifstream
 #include <cmath>        // std::abs
-#include <assert.h>     /* assert */
-#include <limits> // std::numeric_limits<double>::infinity();
+#include <assert.h>     // assert
+#include <limits>       // std::numeric_limits<double>::infinity();
+#include <iomanip>      // std::setw
 
 
 TxtReader::TxtReader(const char inchar[]){
@@ -103,8 +104,8 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
 
     // TODO
     // check for x size
-    cout<< "Matrix size = "<< this->nObs_ << " " << this->nVars_ << endl;
-    cout<< "Vector length = " << wsaf.size() << endl;
+    dout<< "Matrix size = "<< this->nObs_ << " " << this->nVars_ << endl;
+    dout<< "Vector length = " << wsaf.size() << endl;
 
     // Initialize
     this->initialization();
@@ -113,14 +114,21 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     this->productOfxy();
     this->nulldev_ = computeNullDev(x, wsaf);
 
+    cout << setw(10) << "df"
+         << setw(10) << "rsq"
+         << setw(10) << "lambda" << endl;
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->setLambdaCurrent(1.0 / (3.0+(double)i));
         dout << endl << "****************** current lambda: "
              << this->lambdaCurrent() << endl;
         this->lassoGivenLambda();
+        cout << setw(10) << this->dfCurrent()
+             << setw(10) << this->rsqCurrent()
+             << setw(10) << this->lambdaCurrent() << endl;
+        dout << "######### lassoGivenLambda finished at " << npass_ ;
         this->setLambdaPrevious(this->lambdaCurrentScaled());
+        //dout << " this->ninCurrent_ "<< this->ninCurrent_ << endl;
 
-        dout << "########## this->ninCurrent_ "<< this->ninCurrent_ << endl;
         // FETCH AND UPDATE THE CURRENT INFERENCE RESULTS
         this->beta.push_back(betaCurrent);
         this->lambda[i] = lambdaCurrent();
@@ -128,7 +136,7 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
         this->devRatio[i] = rsqCurrent();
         this->df[i] = dfCurrent();
     }
-    cout<<"beta.size = "<< beta.size() <<endl;
+    dout<<"beta.size = "<< beta.size() <<endl;
 }
 
 
@@ -211,11 +219,11 @@ void DEploidLASSO::initialization(size_t nLambda){
     //this->maxIteration_ = 3000;
     this->thresh_ = 1e-7;
     this->dfmax_ = nVars_ + 1;
-    this->npass_ = 0;
     this->mm = vector < size_t > (nVars_, (size_t)0);
     this->iz = 0;
 
     this->setLambdaPrevious(0.0);
+    this->npass_ = 0;
 
     //pmax = min(dfmax * 2+20, nvars)
     //this->nObs_ = nObs;
@@ -264,7 +272,6 @@ void DEploidLASSO::lassoGivenLambda(){
     /*
      * LOCAL INITIALIZATION
      */
-    this->npass_ = 0;
     this->betaCurrent = vector <double> (this->nVars_, 0.0);
     this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
     this->setDfCurrent(0);
@@ -273,6 +280,7 @@ void DEploidLASSO::lassoGivenLambda(){
     //vector <double> vp(this->nVars_, 1.0);
     this->jz = 1;
     this->ix = vector <double> (nVars_, 0.0);
+    //double rsq=0.0; //TODO, just replace as rsq0
 
     // ulam is user defined lambdas...
     // no = number of observations
@@ -284,7 +292,6 @@ void DEploidLASSO::lassoGivenLambda(){
     //double beta = 1.0;
     //double bta = beta; // lasso part
     //double omb=1.0-bta; // ridge part, omb = 0
-    double rsq=0.0; //TODO, just replace as rsq0
     //double flmin = 1.0; // this is defined in glmnet.R
 
     //dem=alm*omb
@@ -297,7 +304,7 @@ void DEploidLASSO::lassoGivenLambda(){
     //double dem = 0;
     this->setLambdaCurrentScaled(lambdaCurrent()/this->y_stdv);
 
-    double rsq0 = rsq;
+    //double rsq0 = rsq;
     double tlam=1.0*(2.0 * lambdaCurrentScaled() - lambdaPrevious()); // beta, bta = 1
 
       //rsq=0.0
@@ -312,16 +319,7 @@ void DEploidLASSO::lassoGivenLambda(){
 
     this->chooseVariables(tlam);
 
-    this->updateWithNewVariables();
-                  //10870 continue
-                  //10871 continue
-                        //if(iz*jz.ne.0) go to 10360
-                  //10880 continue
-          //10992 continue
-                //jz=0
-                //goto 10871
-          //10872 continue
-
+    this->updatingCore();
 
     // Rescale coefficients
     this->rescaleCoefficents();
@@ -331,7 +329,7 @@ void DEploidLASSO::lassoGivenLambda(){
 
     // Map coefficients, coefficient -> beta
     this->coefficentToBeta();
-    cout << "nin = " <<nin <<endl;
+    //cout << "nin = " <<nin <<endl;
 }
 
 void DEploidLASSO::chooseVariables(double tlam){
@@ -346,6 +344,26 @@ void DEploidLASSO::chooseVariables(double tlam){
         }
     }
     dout << endl;
+}
+
+
+double DEploidLASSO::rechooseVariables(){
+    dout<<"Choose variables, where lambdaCurrentScaled = " << lambdaCurrentScaled() <<endl;
+
+    double ixx = 0;
+    for ( size_t k = 0; k < nVars_; k++){
+        if (ix[k] == 1){continue;}
+        if (ju[k] == 0){continue;}
+
+        g[k] = this->computeGk_abs(standardized_y, standardized_x_transposed[k]);
+        if (g[k] > lambdaCurrentScaled()){
+            dout << "  * will need vairable " << k << ", where g[k] = " << g[k] << " > lambdaCurrentScaled()."<<endl;
+            ix[k] = 1;
+            ixx = 1;
+        }
+    }
+    dout << endl;
+    return ixx;
 }
 
 
@@ -403,7 +421,6 @@ void DEploidLASSO::updateWithNewVariables(){
 }
 
 
-
 void DEploidLASSO::updatingCore(){
     double ixx;
     while ( true ){
@@ -416,29 +433,8 @@ void DEploidLASSO::updatingCore(){
             if(nin > nVars_){
                 return;
             }
-                ixx = 0;
 
-            for ( size_t k = 0; k < nVars_; k++){
-                if (ix[k] == 1){continue;}
-                if (ju[k] == 0){continue;}
-
-                g[k] = this->computeGk_abs(standardized_y, standardized_x_transposed[k]);
-                if (g[k] > lambdaCurrentScaled()){
-                    ix[k] = 1;
-                    ixx = 1;
-                }
-            }
-
-                   //10940 do 10941 k=1,ni
-                        //if(ix(k).eq.1)goto 10941
-                        //if(ju(k).eq.0)goto 10941
-                        //g(k)=abs(dot_product(y,x(:,k)))
-                        //if(g(k) .le. ab*vp(k))goto 10961
-                        //ix(k)=1
-                        //ixx=1
-                  //10961 continue
-                  //10941 continue
-                  //10942 continue
+            ixx = this->rechooseVariables();
 
             if(ixx != 1) {return;}
             if (npass_ > maxIteration_){
@@ -446,16 +442,18 @@ void DEploidLASSO::updatingCore(){
             }
         }
     }
-
 }
 
 
 void DEploidLASSO::updateWithTheSameVariables(){
     bool keepUpdating = true;
-    dout << endl << "Update With The Same Variables" <<endl;
+    dout << endl;
+    dout << "Update With The Same Variables" <<endl;
+
     while (keepUpdating){
         this->npass_++;
         double dlx = 0.0;
+        dout << "###### begin scanning variables ##########" << endl;
         for ( size_t l = 0; l < this->nin; l++){
             size_t k = indexArray[l];
             dout << "  * Current variable " << k << endl;
@@ -468,10 +466,11 @@ void DEploidLASSO::updateWithTheSameVariables(){
                 continue;
             }
             double del = this->updateYReturnDel(k, gk, ak);
-            dout << " ** Convergence check, dlx was " << dlx ;
+            dout << "  ** Convergence check, dlx was " << dlx ;
             dlx = max(x_variance[k]*del*del, dlx);
             dout << " updated to " << dlx << endl;
         }
+        dout << "###### finish scanning variables ##########" << endl;
 
         if (dlx < thresh_){
             keepUpdating = false;
@@ -516,7 +515,7 @@ double DEploidLASSO::updateYReturnDel(size_t k, double gk, double previousCoeffi
     dout << "  ** Current rsq is "<< this->rsqCurrent() << ", with updated ys:";
     for ( size_t i = 0; i < this->nObs_; i++ ){
         standardized_y[i] -= del * standardized_x_transposed[k][i];
-        if (i < 10){ dout<< standardized_y[i]<<",";  }
+        if (i < 5){ dout<< standardized_y[i]<<",";  }
     }
     dout << endl;
     return del;
@@ -526,34 +525,32 @@ double DEploidLASSO::updateYReturnDel(size_t k, double gk, double previousCoeffi
 void DEploidLASSO::computeIntercept(){
     this->setInterceptCurrent(0.0);
 
-    if (ninCurrent_ == 0){
+    if (nin == 0){
         return;
     }
 
     //a0(k)=ym-dot_product(ca(1:nk,k),xm(ia(1:nk)))
 
     double y_remaining = this->y_mean;
-    for ( size_t i = 0; i < (size_t)this->ninCurrent_; i++ ){
-        y_remaining -= coefficentCurrent[i] * x_mean[indexArray[i]];
-        cout << "y_remaining "<<y_remaining<<endl;
+    for ( size_t i = 0; i < (size_t)this->nin; i++ ){
+        size_t k = indexArray[i];
+        y_remaining -= coefficentCurrent[k] * x_mean[k];
+        //dout << "y_remaining "<<y_remaining<<endl;
     }
     this->setInterceptCurrent(y_remaining);
 }
 
 
 void DEploidLASSO::rescaleCoefficents(){
-    for ( size_t i = 0; i < (size_t)this->ninCurrent_; i++ ){
-        this->coefficentCurrent[i] *= y_stdv;
-        this->coefficentCurrent[i] /= x_stdv[indexArray[i]];
+    this->dfCurrent_ = 0;
+    for ( size_t i = 0; i < (size_t)this->nin; i++ ){
+        size_t k = indexArray[i];
+        if ( this->coefficentCurrent[k] > 0){
+            this->dfCurrent_ ++;
+        }
+        this->coefficentCurrent[k] *= y_stdv;
+        this->coefficentCurrent[k] /= x_stdv[k];
     }
-
-    ////10620 do 10621 k=1,lmu
-            ////alm(k)=ys*alm(k)
-            ////nk=nin(k)
-      //10630 do 10631 l=1,nk
-                  //ca(l,k)=ys*ca(l,k)/xs(ia(l))
-            //10631 continue
-      //10632 continue
 }
 
 
