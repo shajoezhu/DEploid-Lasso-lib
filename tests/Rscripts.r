@@ -40,6 +40,28 @@ normalized_y = myfit$yy
 print(normalized_y[1:10], digits=4)
 print(normalized_x[1:10,], digits=4)
 
+myfit = glmnet( x = truex,
+                y = y,
+                lambda = 1/seq(3, 5, length.out = 3),
+#                lambda = 1/seq(2, 100, length.out = 3),
+                type.gaussian = "naive",
+                lower.limits= 0)
+
+myfit = glmnet( x = truex, y = y,lambda = 1/seq(3, 5, length.out = 3), type.gaussian = "naive", lower.limits= 0, maxit=1)
+
+
+
+
+myfit = glmnet( x = truex,
+                y = y,
+                lambda = 1/seq(3, 5, length.out = 3),
+#                lambda = 1/seq(2, 100, length.out = 3),
+                type.gaussian = "naive",
+                lower.limits= 0, maxit = 4)
+
+
+
+
 lambdas = 1/seq(2, 100, length.out = 100)
 results = list()
 for ( i in 1:100 ){

@@ -40,7 +40,7 @@ subroutine elnet2(beta,ni,ju,vp,cl,y,no,ne,nx,x,nlam,flmin,ulam,thr,maxit,xv,  l
 
 10790 do 10791 m=1,nlam
                         alm0=alm
-                        if(flmin .lt. 1.0) goto 10811
+                  if(flmin .lt. 1.0) goto 10811
                               alm=ulam(m)
                               goto 10801
                   10811 if(m .le. 2)goto 10821
@@ -161,6 +161,7 @@ subroutine elnet2(beta,ni,ju,vp,cl,y,no,ne,nx,x,nlam,flmin,ulam,thr,maxit,xv,  l
                   11021 continue
                               goto 10991
                   10992 continue
+
                         jz=0
                         goto 10871
                   10872 continue

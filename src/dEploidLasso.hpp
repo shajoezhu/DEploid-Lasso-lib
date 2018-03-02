@@ -206,9 +206,14 @@ class DEploidLASSO{
     double lambdaCurrent_;
     void setLambdaCurrent ( const double setTo ){ this->lambdaCurrent_ = setTo; }
     double lambdaCurrent() const { return this->lambdaCurrent_; }
-    double lambdaCurrentLasso_;
-    void setLambdaCurrentLasso ( const double setTo ){ this->lambdaCurrentLasso_ = setTo; }
-    double lambdaCurrentLasso() const { return this->lambdaCurrentLasso_; }
+
+    double lambdaPrevious_;
+    void setLambdaPrevious ( const double setTo ){ this->lambdaPrevious_ = setTo; }
+    double lambdaPrevious() const { return this->lambdaPrevious_; }
+
+    double lambdaCurrentScaled_;
+    void setLambdaCurrentScaled ( const double setTo ){ this->lambdaCurrentScaled_ = setTo; }
+    double lambdaCurrentScaled() const { return this->lambdaCurrentScaled_; }
 
     double rsqCurrent_;
     void setRsqCurrent ( const double setTo ){ this->rsqCurrent_ = setTo; }
@@ -229,15 +234,18 @@ class DEploidLASSO{
     void rescaleCoefficents();
     void coefficentToBeta();
     void updateCoefficient(size_t k, double previousCoefficentValue, double gk);
-    double updateY(size_t k, double gk, double ak, double dlx);
+    double updateYReturnDel(size_t k, double gk, double ak);
     void updateWithNewVariables();
     void updateWithTheSameVariables();
+    void updatingCore();
     double computeGk(vector<double> &y, vector<double> &x);
     double computeGk_abs(vector<double> &y, vector<double> &x);
+    void chooseVariables(double tlam);
 
    // Debug tools
     bool print_normalized_struff();
     bool print_initial_gk();
+    bool print_homogeneous_input();
 };
 
 

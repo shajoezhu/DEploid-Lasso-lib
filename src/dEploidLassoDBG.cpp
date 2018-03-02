@@ -41,7 +41,6 @@ bool DEploidLASSO::print_normalized_struff(){
         for (size_t j = 0; j < xx.size(); j++){
             dout << std::setw(9) << xx[j] <<", ";
         }
-        dout<<endl;
     }
     dout<<endl;
 
@@ -49,8 +48,9 @@ bool DEploidLASSO::print_normalized_struff(){
     for (size_t i = 0; i < 10; i++){
         dout << std::setw(8) << this->standardized_y[i] <<", ";
     }
+    dout<<endl;
 
-    return (true);
+    return(true);
 }
 
 
@@ -60,4 +60,18 @@ bool DEploidLASSO::print_initial_gk(){
         dout << gk << ", ";
     }
     dout << endl;
+
+    return(true);
+}
+
+
+bool DEploidLASSO::print_homogeneous_input(){
+    // DEBUG MESSAGE
+    dout << "Variables: ";
+    for (size_t i = 0; i < this->nVars_; i++){
+        if ( ju[i] == 0 ) {dout << i <<", ";}
+    }
+    dout << " are homogeneous vectors." << endl;
+
+    return(true);
 }

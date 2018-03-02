@@ -110,22 +110,17 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     this->initialization();
     this->checkVariables(x);
     this->standarization(x, wsaf);
-    assert(print_normalized_struff());
-////////////////////////// Print the normalized input
-
-
-
-    this->productOfxy(); // TODO, needs work!!!!
-
-
+    this->productOfxy();
     this->nulldev_ = computeNullDev(x, wsaf);
-    cout << "nulldev = " << this->nulldev_ << endl;
+
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->setLambdaCurrent(1.0 / (3.0+(double)i));
-        cout << "lambda = " << this->lambdaCurrent() << endl;
+        dout << endl << "****************** current lambda: "
+             << this->lambdaCurrent() << endl;
         this->lassoGivenLambda();
+        this->setLambdaPrevious(this->lambdaCurrentScaled());
 
-cout << "########## this->ninCurrent_ "<< this->ninCurrent_ << endl;
+        dout << "########## this->ninCurrent_ "<< this->ninCurrent_ << endl;
         // FETCH AND UPDATE THE CURRENT INFERENCE RESULTS
         this->beta.push_back(betaCurrent);
         this->lambda[i] = lambdaCurrent();
@@ -141,31 +136,21 @@ DEploidLASSO::~DEploidLASSO(){}
 
 
 void DEploidLASSO::productOfxy(){
-
-    //10780 do 10781 j=1,ni
-            //if(ju(j).eq.0)goto 10781
-            //g(j)=abs(dot_product(y,x(:,j)))
-    //10781 continue
-
     this->g = vector <double> (nVars_, 0.0);
-
     for (size_t j = 0; j < this->nVars_; j++){
         // skip homogeneous variables
         if (this->ju[j] != 0){
             this->g[j] = computeGk_abs(standardized_y, standardized_x_transposed[j]);
         }
     }
-
     assert(this->g.size() == nVars_);
     assert(this->print_initial_gk());
-
 }
 
 
 void DEploidLASSO::checkVariables(vector < vector <double> > &x){
     // check for homogeneous vectors
     this->ju = vector <double> (this->nVars_, 0.0);
-
     for (size_t i = 0; i < this->nVars_; i++){
         for (size_t ii = 1; ii < this->nObs_; ii++){
             if (x[ii][i] != x[0][i]){
@@ -174,13 +159,7 @@ void DEploidLASSO::checkVariables(vector < vector <double> > &x){
             }
         }
     }
-
-    // DEBUG MESSAGE
-    dout << "Variables: ";
-    for (size_t i = 0; i < this->nVars_; i++){
-        if ( ju[i] == 0 ) {dout << i <<", ";}
-    }
-    dout << " are homogeneous vectors." << endl;
+    assert(print_homogeneous_input());
 }
 
 
@@ -209,8 +188,7 @@ void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double
     this->y_stdv = vecY.stdv;
     this->y_mean = vecY.mean;
 
-    // DEBUG
-    //dout << "y_mean:" << y_mean << " y_stdv:" << y_stdv << endl;
+    assert(print_normalized_struff());
 }
 
 
@@ -219,7 +197,8 @@ void DEploidLASSO::initialization(size_t nLambda){
     this->intercept = vector <double> (nLambda, 0.0);
     this->devRatio = vector <double> (nLambda, 0.0);
     this->df = vector <int> (nLambda, 0);
-    this->indexArray = vector <size_t> (nVars_, nVars_); // To initialize to nVars, as index are 0-based, index is from 0 to nVars-1
+    // To initialize to nVars, as index are 0-based, index is from 0 to nVars-1
+    this->indexArray = vector <size_t> (nVars_, nVars_);
 
     //this->lowerLimit = 0;
     this->lowerLimit = -std::numeric_limits<double>::infinity();
@@ -228,12 +207,13 @@ void DEploidLASSO::initialization(size_t nLambda){
     //this->maxIteration_ = 100000;
     this->maxIteration_ = 3000;
     this->thresh_ = 1e-7;
-    //this->absTol_ = 1e-4;
     this->dfmax_ = nVars_ + 1;
     this->npass_ = 0;
     this->mm = vector < size_t > (nVars_, (size_t)0);
     this->iz = 0;
-    //this->nVars_ = nVars;
+
+    this->setLambdaPrevious(0.0);
+
     //pmax = min(dfmax * 2+20, nvars)
     //this->nObs_ = nObs;
 
@@ -263,7 +243,9 @@ double DEploidLASSO::computeNullDev(vector < vector <double> > &x, vector < doub
     vector <double> ybar_vec = vector <double> (wsaf.size(), ybar);
     vector <double> diff = vecDiff(wsaf, ybar_vec);
     vector <double> tmpSq = vecProd(diff, diff);
-    return (double) sumOfVec( tmpSq );
+    double ret = sumOfVec( tmpSq );
+    dout << "nulldev = " << ret << endl;
+    return ret;
 }
 
 
@@ -275,12 +257,9 @@ void DEploidLASSO::lassoGivenLambda(){
      * standardized_y
      *
      */
-    //cout << lambda << endl;
-    assert(nVars_ > 0);
-    assert(nObs_ > 0);
 
     /*
-     * INITIALIZATION
+     * LOCAL INITIALIZATION
      */
     this->npass_ = 0;
     this->betaCurrent = vector <double> (this->nVars_, 0.0);
@@ -300,15 +279,11 @@ void DEploidLASSO::lassoGivenLambda(){
     //c   parm = penalty member index (0 <= parm <= 1)
     //c        = 0.0 => ridge
     //c        = 1.0 => lasso
-    double beta = 1.0;
-    double bta=beta; // lasso part
-    double omb=1.0-bta; // ridge part, omb = 0
+    //double beta = 1.0;
+    //double bta = beta; // lasso part
+    //double omb=1.0-bta; // ridge part, omb = 0
     double rsq=0.0; //TODO, just replace as rsq0
-
-    // Initializations
-    double alm0 = 0.0;
-    //double alm  = lambda;
-    double flmin = 1.0; // this is defined in glmnet.R
+    //double flmin = 1.0; // this is defined in glmnet.R
 
     //dem=alm*omb
     //ab=alm*bta
@@ -318,10 +293,10 @@ void DEploidLASSO::lassoGivenLambda(){
 
     //double dem = lambdaCurrent() * omb;
     //double dem = 0;
-    this->lambdaCurrentLasso_ = lambdaCurrent() * bta;
+    this->setLambdaCurrentScaled(lambdaCurrent()/this->y_stdv);
+
     double rsq0 = rsq;
-    double tlam=bta*(2.0 * lambdaCurrent() - alm0);
-cout<<"tlam " << tlam <<endl;
+    double tlam=1.0*(2.0 * lambdaCurrentScaled() - lambdaPrevious()); // beta, bta = 1
 
       //rsq=0.0
       //a=0.0
@@ -332,22 +307,8 @@ cout<<"tlam " << tlam <<endl;
       //mnl=min(mnlam,nlam)
       //alm=0.0
 
-    //10860 do 10861 k=1,ni
-                //if(ix(k).eq.1)goto 10861
-                //if(ju(k).eq.0)goto 10861
-                //if(g(k).gt.tlam*vp(k)) ix(k)=1
-          //10861 continue
-    //10862 continue
 
-    for ( size_t k = 0; k < this->nVars_; k++){
-        if (ix[k] == 1) {continue;}
-        if (ju[k] == 0) {continue;}
-        if (g[k] > (tlam*1.0)){
-            cout << k << " g[k] = " <<g[k] << " vs " <<tlam <<endl;
-            ix[k] = 1.0;
-        }
-    }
-
+    this->chooseVariables(tlam);
 
     this->updateWithNewVariables();
                   //10870 continue
@@ -371,46 +332,82 @@ cout<<"tlam " << tlam <<endl;
     cout << "nin = " <<nin <<endl;
 }
 
+void DEploidLASSO::chooseVariables(double tlam){
+    dout<<"Choose variables, where tlam = " << tlam <<endl;
+
+    for ( size_t k = 0; k < this->nVars_; k++){
+        if (ix[k] == 1) {continue;}
+        if (ju[k] == 0) {continue;}
+        if (g[k] > (tlam*1.0)){
+            dout << "  * will need vairable " << k << ", where g[k] = " << g[k] << " > tlam."<<endl;
+            ix[k] = 1.0;
+        }
+    }
+    dout << endl;
+}
+
 
 void DEploidLASSO::updateWithNewVariables(){
+    dout << "Update with new variables" <<endl;
+    dout << "###### begin scanning variables ##########" <<endl;
+    this->npass_++;
+    double dlx=0.0;
+
+    for (size_t k = 0; k < nVars_; k++){
+        if (ix[k] == 0){
+            dout << "  * Skipping variable " << k << endl;
+            continue;
+        }
+
+        dout << "  * Variable " << k << endl;
+        double ak = this->coefficentCurrent[k];
+        double gk = computeGk(this->standardized_y, this->standardized_x_transposed[k]);
+        this->updateCoefficient(k, ak, gk);
+
+        // If the coefficient unchanged, move on to the next
+        if ( coefficentCurrent[k] == ak ) {
+            continue;
+        }
+
+        if (mm[k] == 0){
+          dout << "here k="<<k<<"mm[k]="<<mm[k];
+          mm[k] = nin;
+          dout << "updated to " <<mm[k];
+          this->indexArray[nin] = k;
+          dout <<"updating indexArray["<<nin<<"] ="<< k<<endl;
+          nin += 1;
+          if (nin > nVars_){
+              break;
+          }
+        }
+
+        dout << "***variable "<<k<<" **** nin = " << nin <<endl;
+        double del = this->updateYReturnDel(k, gk, ak);
+        dout << " rsq = "<< this->rsqCurrent() <<endl;
+
+        dout << "dlx was " << dlx ;
+        dlx = max(x_variance[k]*del*del, dlx);
+        dout << " updated to " << dlx << endl;
+    }
+
+    dout << "###### finish scanning variables ##########" <<endl;
+    dout << "dlx = " << dlx << ", this->thresh_"<< this->thresh_<<endl;
+
+    if(dlx >= this->thresh_){
+        updateWithTheSameVariables();
+    }
+}
+
+
+
+void DEploidLASSO::updatingCore(){
     double ixx;
     while ( true ){
         if ( iz*jz != 0 ){
             iz = 1;
             updateWithTheSameVariables();
         } else {
-            this->npass_++;
-            //cout << "npass = "<<npass_ << " " <<lambdaCurrentLasso() <<endl;
-            double dlx=0.0;
-            dout << "###### begin scanning variables ##########" <<endl;
-
-            for (size_t k = 0; k < nVars_; k++){
-                if (ix[k] == 0){ cout << "skipping"<<k<<endl;continue; }
-                double ak = this->coefficentCurrent[k];
-                double gk = computeGk(this->standardized_y, this->standardized_x_transposed[k]);
-                this->updateCoefficient(k, ak, gk);
-                if ( coefficentCurrent[k] == ak ) {
-                    continue;
-                }
-
-                if (mm[k] == 0){
-                  nin += 1;
-                  if (nin > nVars_){
-                      break;
-                  }
-                  mm[k] = nin;
-                  indexArray[nin] = k;
-                }
-                dout << "***variable "<<k<<" **** nin = " << nin <<endl;
-                this->updateY(k, gk, ak, dlx);
-            }
-
-            dout << "###### finish scanning variables ##########" <<endl;
-
-
-            if(dlx >= this->thresh_){
-                updateWithTheSameVariables();
-            }
+            updateWithNewVariables();
 
             if(nin > nVars_){
                 return;
@@ -422,7 +419,7 @@ void DEploidLASSO::updateWithNewVariables(){
                 if (ju[k] == 0){continue;}
 
                 g[k] = this->computeGk_abs(standardized_y, standardized_x_transposed[k]);
-                if (g[k] > lambdaCurrentLasso()){
+                if (g[k] > lambdaCurrentScaled()){
                     ix[k] = 1;
                     ixx = 1;
                 }
@@ -451,21 +448,35 @@ void DEploidLASSO::updateWithNewVariables(){
 
 
 void DEploidLASSO::updateWithTheSameVariables(){
-    cout << "updateWithTheSameVariables" <<endl;
-    while ( npass_ < this->maxIteration_ ){
+    bool keepUpdating = true;
+    dout << "updateWithTheSameVariables" <<endl;
+    while (keepUpdating){
         this->npass_++;
         double dlx = 0.0;
         for ( size_t l = 0; l < this->nin; l++){
+        //cout<<"here"<<endl;
             size_t k = indexArray[l];
+    cout<<"k = "<<k<<endl;
             double ak = this->coefficentCurrent[k];
             double gk = computeGk(this->standardized_y, this->standardized_x_transposed[k]);
+
             this->updateCoefficient(k, ak, gk);
+
             if(coefficentCurrent[k] == ak) {
                 continue;
             }
-            dlx = this->updateY(k, gk, ak, dlx);
+            double del = this->updateYReturnDel(k, gk, ak);
+            dout << " rsq = "<< this->rsqCurrent() <<endl;
+            dout << "dlx was " << dlx ;
+            dlx = max(x_variance[k]*del*del, dlx);
+            dout << " updated to " << dlx << endl;
         }
+
         if (dlx < thresh_){
+            keepUpdating = false;
+        }
+
+        if (npass_ > this->maxIteration_ ){
             break;
         }
     }
@@ -474,18 +485,21 @@ void DEploidLASSO::updateWithTheSameVariables(){
 
 
 void DEploidLASSO::updateCoefficient(size_t k, double previousCoefficentValue, double gk){
-    cout << "gk = "<<gk<<" x_variance[k] = "<< x_variance[k]<<endl;
     double u = gk + previousCoefficentValue * x_variance[k];
+    //u=gk+ak*xv(k)
+    //u=gk+ak*xv(k)
+    double v = abs(u) - 1.0 * lambdaCurrentScaled();
+    //v=abs(u)-vp(k)*ab
+    //v=abs(u)-vp(k)*ab
 
+    dout << "  ** Update coefficient" << endl;
+    dout << "     Check if "<< lambdaCurrentScaled() << " is in the radius of u = " << u << ", it gives v = " << v <<endl;
+    dout << "     Updating coefficient: " << previousCoefficentValue << " to ";
+    coefficentCurrent[k] = 0.0;
     double u_sign = 1.0;
-
     if ( u < 0 ){
         u_sign = -1.0;
     }
-    double v = abs(u) - 1.0 * lambdaCurrentLasso();
-    dout << " u = "<< u<< " v = "<<v <<" x_variance[k] = "<<x_variance[k]<<endl;
-    coefficentCurrent[k] = 0.0;
-    dout << "updating coefficient: " << previousCoefficentValue << " to ";
     if ( v > 0.0 ){
        coefficentCurrent[k] = max(lowerLimit,
                                    min(upperLimit, v*u_sign/x_variance[k]));
@@ -494,16 +508,19 @@ void DEploidLASSO::updateCoefficient(size_t k, double previousCoefficentValue, d
 }
 
 
-double DEploidLASSO::updateY(size_t k, double gk, double ak, double dlx){
-    double del = this->coefficentCurrent[k] - ak;
+double DEploidLASSO::updateYReturnDel(size_t k, double gk, double previousCoefficentValue){
+    double del = this->coefficentCurrent[k] - previousCoefficentValue;
     dout << "del = " << del ;
-    this->rsqCurrent_ += del * (2.0*gk-del*x_variance[k]);
-    dout << "updating y, y[0] = "<<standardized_y[0];
+    this->rsqCurrent_ += del * (2.0 * gk - del * x_variance[k]);
+    dout << "updating y to ";
     for ( size_t i = 0; i < this->nObs_; i++ ){
         standardized_y[i] -= del * standardized_x_transposed[k][i];
+        if (i < 10){
+            dout<< standardized_y[i]<<",";
+        }
     }
-    dout << ", updated to "<<standardized_y[0]<< " rsq = "<< this->rsqCurrent() <<endl;
-    return max(x_variance[k]*del*del, dlx);
+    dout << endl;
+    return del;
 }
 
 
