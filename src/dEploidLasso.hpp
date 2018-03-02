@@ -152,6 +152,7 @@ class DEploidLASSO{
     DEploidLASSO(vector < vector <double> > &x, // nObs x nVariable
                  vector < double > &y);
     ~DEploidLASSO();
+    void printResults();
 
   private:
 

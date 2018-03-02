@@ -10,6 +10,7 @@ int main(int argc, char *argv[]){
         //vector < vector <double> > matrix = TxtReader ("tests/myX.txt").matrix;
         //vector < double > wsaf = TxtReader ("tests/myy.txt").vec;
         DEploidLASSO dummy(matrix, wsaf);
+        dummy.printResults();
         return EXIT_SUCCESS;
     }
     catch (const exception &e) {

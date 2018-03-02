@@ -114,17 +114,11 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     this->productOfxy();
     this->nulldev_ = computeNullDev(x, wsaf);
 
-    cout << setw(10) << "df"
-         << setw(10) << "rsq"
-         << setw(10) << "lambda" << endl;
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->setLambdaCurrent(1.0 / (3.0+(double)i));
         dout << endl << "****************** current lambda: "
              << this->lambdaCurrent() << endl;
         this->lassoGivenLambda();
-        cout << setw(10) << this->dfCurrent()
-             << setw(10) << this->rsqCurrent()
-             << setw(10) << this->lambdaCurrent() << endl;
         dout << "######### lassoGivenLambda finished at " << npass_ ;
         this->setLambdaPrevious(this->lambdaCurrentScaled());
         //dout << " this->ninCurrent_ "<< this->ninCurrent_ << endl;
@@ -530,7 +524,6 @@ void DEploidLASSO::computeIntercept(){
     }
 
     //a0(k)=ym-dot_product(ca(1:nk,k),xm(ia(1:nk)))
-
     double y_remaining = this->y_mean;
     for ( size_t i = 0; i < (size_t)this->nin; i++ ){
         size_t k = indexArray[i];
@@ -555,7 +548,7 @@ void DEploidLASSO::rescaleCoefficents(){
 
 
 void DEploidLASSO::coefficentToBeta(){
-
+    this->betaCurrent = this->coefficentCurrent;
 }
 
 
@@ -567,4 +560,36 @@ double DEploidLASSO::computeGk(vector<double> &y, vector<double> &x){
 
 double DEploidLASSO::computeGk_abs(vector<double> &y, vector<double> &x){
     return abs(computeGk(y, x));
+}
+
+
+void DEploidLASSO::printResults(){
+    cout << setw(10) << "df"
+         << setw(10) << "rsq"
+         << setw(10) << "lambda" << endl;
+
+    for ( size_t i = 0; i < this->lambda.size(); i++){
+        cout << setw(10) << this->df[i]
+             << setw(10) << this->devRatio[i]
+             << setw(10) << this->lambda[i] << endl;
+    }
+
+    for ( size_t j = 0; j < this->lambda.size(); j++){
+        cout << setw(15) << "beta_{i" << j << "}";
+    }
+    cout << endl;
+
+    for (size_t i = 0; i < this->nVars_; i++){
+        double tmpSum = 0;
+        for ( size_t j = 0; j < this->lambda.size(); j++){
+            tmpSum += this->beta[j][i];
+        }
+        if (tmpSum>0){
+            for ( size_t j = 0; j < this->lambda.size(); j++){
+                cout << setw(15) << beta[j][i];
+            }
+            cout << endl;
+        }
+    }
+    cout << endl;
 }
