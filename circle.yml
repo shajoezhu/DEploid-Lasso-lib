@@ -13,6 +13,6 @@ dependencies:
 
 test:
   override:
-    - make
+    - make a.out
     - ./a.out
 
