@@ -14,5 +14,6 @@ dependencies:
 test:
   override:
     - ./bootstrap
+    - make
     - ./lasso
 
