@@ -45,3 +45,16 @@ aclocal.m4
 INSTALL
 compile
 test-driver
+
+# unittest
+test-suite.log
+unit_tests
+unit_tests.log
+unit_tests.trs
+
+# coverage test
+*.gcda
+*.gcno
+*.gcov
+libbash_test.info
+test_coverage/

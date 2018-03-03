@@ -574,8 +574,9 @@ void DEploidLASSO::printResults(){
              << setw(10) << this->lambda[i] << endl;
     }
 
+    cout << setw(15) << "X_i";
     for ( size_t j = 0; j < this->lambda.size(); j++){
-        cout << setw(15) << "beta_{i" << j << "}";
+        cout << setw(15) << "beta_{i," << j << "}";
     }
     cout << endl;
 
@@ -585,6 +586,7 @@ void DEploidLASSO::printResults(){
             tmpSum += this->beta[j][i];
         }
         if (tmpSum>0){
+            cout << setw(15) << i;
             for ( size_t j = 0; j < this->lambda.size(); j++){
                 cout << setw(15) << beta[j][i];
             }
