@@ -62,7 +62,6 @@ TxtReader::TxtReader(const char inchar[]){
     }
 
     in_file.close();
-
 }
 
 
