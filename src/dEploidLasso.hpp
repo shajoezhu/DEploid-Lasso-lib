@@ -95,29 +95,6 @@ T sumOfVec( vector <T>& array ){
 }
 
 
-//class LASSOgivenLambda{
-  //friend class DEploidLASSO;
-  //private:
-    //int maxIteration_;
-    //double thresh_;
-    //double absTol_;
-
-    //size_t nObs_;
-    //size_t nVars_;
-    //size_t dfmax_;
-    //void initialization(size_t nObs, size_t nVars);
-    //vector <double> beta;
-    ////double lambda; // size of nLambda
-    //double devRatio;
-    //double intercept;
-    //int df;
-    //vector <double> vp; // penalty
-    //vector <double> vq;
-    //LASSOgivenLambda(vector < vector <double> > &x, vector < double > &y, double lambda, vector < double > ju, vector <double> g, vector <double> &ix);
-    //~LASSOgivenLambda(){}
-//};
-
-
 class TxtReader{
   friend class DEploidLASSO;
 
@@ -125,8 +102,6 @@ class TxtReader{
     vector < vector < double > > matrix;
     vector < double > vec;
     TxtReader (const char inchar[]);
-    //virtual void readFromFile( const char inchar[] ){ this->readFromFileBase( inchar ); };
-    //void readFromFileBase( const char inchar[] );
     ~TxtReader(){ };
 
   private:
