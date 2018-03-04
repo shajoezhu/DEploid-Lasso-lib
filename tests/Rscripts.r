@@ -28,8 +28,8 @@ write.table(truex, file="myX.txt", sep = "\t", row.names = F, col.names=F)
 write.table(y, file="myy.txt", sep = "\t", row.names = F, col.names=F)
 
 
-truex = as.matrix(read.table("myX.txt", header=F))
-y = read.table("myy.txt", header=F)$V1
+truex = as.matrix(read.table("../data/myX.txt", header=F))
+y = read.table("../data/myy.txt", header=F)$V1
 myfit = glmnet( x = truex,
                 y = y,
                 lambda = 1/seq(3, 5, length.out = 3),
