@@ -10,7 +10,7 @@ TESTS = unit_tests
 check_PROGRAMS = unit_tests lasso_dbg lasso_prof
 PROG = DEPLOID
 
-common_flags = -std=c++0x -Isrc/ -DDEPLOIDLASSOVERSION=\"${DEPLOIDLASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
+common_flags = -std=c++11 -Isrc/ -DDEPLOIDLASSOVERSION=\"${DEPLOIDLASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
 common_src = src/dEploidLasso.cpp
 
@@ -27,6 +27,13 @@ lasso_prof_CXXFLAGS = $(common_flags) -DNDEBUG -fno-omit-frame-pointer -pg -O1
 lasso_LDADD = $(common_LDADD)
 lasso_dbg_LDADD = $(common_LDADD)
 lasso_prof_LDADD = $(common_LDADD)
+
+unit_tests_SOURCES = $(common_src) \
+					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_txtReader.cpp
+
+unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage
+unit_tests_LDADD    = -lcppunit -ldl
 
 clean-local: clean-local-check
 .PHONY: clean-local-check utilities

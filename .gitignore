@@ -45,6 +45,7 @@ aclocal.m4
 INSTALL
 compile
 test-driver
+.dirstamp
 
 # unittest
 test-suite.log
