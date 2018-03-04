@@ -16,4 +16,5 @@ test:
     - ./bootstrap
     - make check
     - ./lasso
+    - valgrind ./unit_tests
 

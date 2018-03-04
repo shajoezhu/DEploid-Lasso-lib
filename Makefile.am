@@ -30,6 +30,7 @@ lasso_prof_LDADD = $(common_LDADD)
 
 unit_tests_SOURCES = $(common_src) \
 					 tests/unittest/test_runner.cpp \
+					 tests/unittest/test_standardizeVector.cpp \
 					 tests/unittest/test_txtReader.cpp
 
 unit_tests_CXXFLAGS = $(common_flags) -DNDEBUG -DUNITTEST -Wno-write-strings --coverage

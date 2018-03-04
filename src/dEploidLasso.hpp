@@ -115,6 +115,7 @@ struct standardizeVector {
     double variance;
 
     standardizeVector(vector <double> vec);
+    ~standardizeVector(){}
 };
 
 
