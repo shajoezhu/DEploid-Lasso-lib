@@ -97,7 +97,7 @@ standardizeVector::standardizeVector(vector <double> vec){
 }
 
 
-DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsaf){
+DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsaf, size_t nLambda){
     this->nVars_ = x[0].size();
     this->nObs_ = x.size();
 
@@ -107,7 +107,7 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     dout<< "Vector length = " << wsaf.size() << endl;
 
     // Initialize
-    this->initialization();
+    this->initialization(nLambda);
     this->checkVariables(x);
     this->standarization(x, wsaf);
     this->productOfxy();
@@ -194,11 +194,20 @@ void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double
 
 
 void DEploidLASSO::initialization(size_t nLambda){
-    this->lambda = vector <double> (nLambda, 0.0);
-    this->intercept = vector <double> (nLambda, 0.0);
-    this->devRatio = vector <double> (nLambda, 0.0);
-    this->df = vector <int> (nLambda, 0);
+    this->betaCurrent = vector <double> (this->nVars_, 0.0);
+    this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
 
+    //this->lambda = vector <double> (nLambda, 0.0);
+    //this->intercept = vector <double> (nLambda, 0.0);
+    //this->devRatio = vector <double> (nLambda, 0.0);
+    //this->df = vector <int> (nLambda, 0);
+
+    for (size_t i = 0; i < nLambda; i++){
+        this->lambda.push_back(0.0);
+        this->intercept.push_back(0.0);
+        this->devRatio.push_back(0.0);
+        this->df.push_back(0);
+    }
     this->setRsqCurrent(0.0);
 
     // To initialize to nVars, as index are 0-based, index is from 0 to nVars-1
@@ -237,8 +246,6 @@ void DEploidLASSO::initialization(size_t nLambda){
       ////iz=0
       ////mnl=min(mnlam,nlam)
       ////alm=0.0
-
-
 }
 
 
@@ -265,8 +272,6 @@ void DEploidLASSO::lassoGivenLambda(){
     /*
      * LOCAL INITIALIZATION
      */
-    this->betaCurrent = vector <double> (this->nVars_, 0.0);
-    this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
     this->setDfCurrent(0);
     this->setInterceptCurrent(0.0);
 
@@ -416,7 +421,8 @@ void DEploidLASSO::updateWithNewVariables(){
 
 void DEploidLASSO::updatingCore(){
     double ixx;
-    while ( true ){
+    bool keepUpdating = true;
+    while ( keepUpdating ){
         if ( iz*jz != 0 ){
             iz = 1;
             updateWithTheSameVariables();
@@ -424,14 +430,19 @@ void DEploidLASSO::updatingCore(){
             updateWithNewVariables();
 
             if(nin > nVars_){
-                return;
+                keepUpdating = false;
+                break;
             }
 
             ixx = this->rechooseVariables();
 
-            if(ixx != 1) {return;}
+            if(ixx != 1) {
+                keepUpdating = false;
+                break;
+            }
             if (npass_ > maxIteration_){
-                return;
+                keepUpdating = false;
+                break;
             }
         }
     }
@@ -465,11 +476,12 @@ void DEploidLASSO::updateWithTheSameVariables(){
         }
         dout << "###### finish scanning variables ##########" << endl;
 
-        if (dlx < thresh_){
+        if (dlx < this->thresh_){
             keepUpdating = false;
         }
 
         if (npass_ > this->maxIteration_ ){
+            keepUpdating = false;
             break;
         }
     }

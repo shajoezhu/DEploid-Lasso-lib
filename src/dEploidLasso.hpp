@@ -126,7 +126,8 @@ class DEploidLASSO{
   public:
     //DEploidLASSO();
     DEploidLASSO(vector < vector <double> > &x, // nObs x nVariable
-                 vector < double > &y);
+                 vector < double > &y,
+                 size_t nLambda = 100);
     ~DEploidLASSO();
     void printResults();
 
@@ -134,7 +135,7 @@ class DEploidLASSO{
 
   // FUNCTIONS
    // COMMON
-    void initialization(size_t nLambda = 100);
+    void initialization(size_t nLambda);
     void standarization(vector < vector <double> > &x, vector < double > &y);
     void checkVariables(vector < vector <double> > &x);
     void productOfxy();
