@@ -202,8 +202,8 @@ class DEploidLASSO{
     double interceptCurrent() const { return this->interceptCurrent_; }
 
     int dfCurrent_;
-    void setDfCurrent ( const double setTo ){ this->dfCurrent_ = setTo; }
-    double dfCurrent() const { return this->dfCurrent_; }
+    void setDfCurrent ( const int setTo ){ this->dfCurrent_ = setTo; }
+    int dfCurrent() const { return this->dfCurrent_; }
 
     //int ninCurrent_;
     int iz, jz;

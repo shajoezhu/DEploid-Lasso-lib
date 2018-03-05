@@ -107,12 +107,12 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     dout<< "Vector length = " << wsaf.size() << endl;
 
     // Initialize
+
     this->initialization(nLambda);
     this->checkVariables(x);
     this->standarization(x, wsaf);
     this->productOfxy();
     this->nulldev_ = computeNullDev(x, wsaf);
-
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->setLambdaCurrent(1.0 / (3.0+(double)i));
         dout << endl << "****************** current lambda: "
@@ -194,6 +194,7 @@ void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double
 
 
 void DEploidLASSO::initialization(size_t nLambda){
+    //this->beta.clear();
     this->betaCurrent = vector <double> (this->nVars_, 0.0);
     this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
 
@@ -202,12 +203,15 @@ void DEploidLASSO::initialization(size_t nLambda){
     //this->devRatio = vector <double> (nLambda, 0.0);
     //this->df = vector <int> (nLambda, 0);
 
+    this->ix = vector <double> (nVars_, 0.0);
+
     for (size_t i = 0; i < nLambda; i++){
         this->lambda.push_back(0.0);
         this->intercept.push_back(0.0);
         this->devRatio.push_back(0.0);
-        this->df.push_back(0);
+        this->df.push_back((int)0);
     }
+
     this->setRsqCurrent(0.0);
 
     // To initialize to nVars, as index are 0-based, index is from 0 to nVars-1
@@ -226,7 +230,7 @@ void DEploidLASSO::initialization(size_t nLambda){
 
     this->setLambdaPrevious(0.0);
     this->npass_ = 0;
-
+    this->setDfCurrent(dfmax_);
     //pmax = min(dfmax * 2+20, nvars)
     //this->nObs_ = nObs;
 
@@ -273,11 +277,10 @@ void DEploidLASSO::lassoGivenLambda(){
      * LOCAL INITIALIZATION
      */
     this->setDfCurrent(0);
-    this->setInterceptCurrent(0.0);
+    //this->setInterceptCurrent(0.0);
 
     //vector <double> vp(this->nVars_, 1.0);
     this->jz = 1;
-    this->ix = vector <double> (nVars_, 0.0);
     //double rsq=0.0; //TODO, just replace as rsq0
 
     // ulam is user defined lambdas...
@@ -420,7 +423,7 @@ void DEploidLASSO::updateWithNewVariables(){
 
 
 void DEploidLASSO::updatingCore(){
-    double ixx;
+    double ixx = 0;
     bool keepUpdating = true;
     while ( keepUpdating ){
         if ( iz*jz != 0 ){
@@ -559,7 +562,9 @@ void DEploidLASSO::rescaleCoefficents(){
 
 
 void DEploidLASSO::coefficentToBeta(){
-    this->betaCurrent = this->coefficentCurrent;
+    for ( size_t i = 0; i < this->nVars_; i++){
+        this->betaCurrent[i] = this->coefficentCurrent[i];
+    }
 }
 
 
@@ -578,7 +583,6 @@ void DEploidLASSO::printResults(){
     cout << setw(10) << "df"
          << setw(10) << "rsq"
          << setw(10) << "lambda" << endl;
-
     for ( size_t i = 0; i < this->lambda.size(); i++){
         cout << setw(10) << this->df[i]
              << setw(10) << this->devRatio[i]

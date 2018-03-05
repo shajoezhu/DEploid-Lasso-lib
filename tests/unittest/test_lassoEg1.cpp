@@ -30,7 +30,7 @@ class TestLassoEg1 : public CppUnit::TestCase {
     void testValues(){
         vector < vector <double> > matrix = TxtReader ("data/myX.txt").matrix;
         vector < double > wsaf = TxtReader ("data/myy.txt").vec;
-        DEploidLASSO dummy (matrix, wsaf, 3);
+        DEploidLASSO dummy0 (matrix, wsaf, 0);
 
         //DEploidLASSO dummy3(matrix, wsaf,3);
 
