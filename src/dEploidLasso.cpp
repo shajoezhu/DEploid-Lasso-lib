@@ -231,6 +231,7 @@ void DEploidLASSO::initialization(size_t nLambda){
     this->setLambdaPrevious(0.0);
     this->npass_ = 0;
     this->setDfCurrent(dfmax_);
+    this->nin = 0;
     //pmax = min(dfmax * 2+20, nvars)
     //this->nObs_ = nObs;
 
@@ -276,11 +277,6 @@ void DEploidLASSO::lassoGivenLambda(){
     /*
      * LOCAL INITIALIZATION
      */
-    this->setDfCurrent(0);
-    //this->setInterceptCurrent(0.0);
-
-    //vector <double> vp(this->nVars_, 1.0);
-    this->jz = 1;
     //double rsq=0.0; //TODO, just replace as rsq0
 
     // ulam is user defined lambdas...
@@ -301,26 +297,14 @@ void DEploidLASSO::lassoGivenLambda(){
     //jz=1
     //tlam=bta*(2.0*alm-alm0)
 
-    //double dem = lambdaCurrent() * omb;
-    //double dem = 0;
+    this->setDfCurrent(0);
+    this->jz = 1;
     this->setLambdaCurrentScaled(lambdaCurrent()/this->y_stdv);
-
-    //double rsq0 = rsq;
     double tlam=1.0*(2.0 * lambdaCurrentScaled() - lambdaPrevious()); // beta, bta = 1
-
-      //rsq=0.0
-      //a=0.0
-      //mm=0
-      //nlp=0
-      //nin=nlp
-      //iz=0
-      //mnl=min(mnlam,nlam)
-      //alm=0.0
-
 
     this->chooseVariables(tlam);
 
-    this->updatingCore();
+    //this->updatingCore();
 
     // Rescale coefficients
     this->rescaleCoefficents();
@@ -330,7 +314,6 @@ void DEploidLASSO::lassoGivenLambda(){
 
     // Map coefficients, coefficient -> beta
     this->coefficentToBeta();
-    //cout << "nin = " <<nin <<endl;
 }
 
 void DEploidLASSO::chooseVariables(double tlam){
@@ -533,11 +516,10 @@ double DEploidLASSO::updateYReturnDel(size_t k, double gk, double previousCoeffi
 void DEploidLASSO::computeIntercept(){
     this->setInterceptCurrent(0.0);
 
-    if (nin == 0){
+    if (this->nin == 0){
         return;
     }
 
-    //a0(k)=ym-dot_product(ca(1:nk,k),xm(ia(1:nk)))
     double y_remaining = this->y_mean;
     for ( size_t i = 0; i < (size_t)this->nin; i++ ){
         size_t k = indexArray[i];
