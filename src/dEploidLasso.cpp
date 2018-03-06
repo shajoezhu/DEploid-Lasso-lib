@@ -112,7 +112,7 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
     this->checkVariables(x);
     this->standarization(x, wsaf);
     this->productOfxy();
-    this->nulldev_ = computeNullDev(x, wsaf);
+    this->computeNullDev(x, wsaf);
     for ( size_t i = 0; i < this->lambda.size(); i++){
         this->setLambdaCurrent(1.0 / (3.0+(double)i));
         dout << endl << "****************** current lambda: "
@@ -129,6 +129,7 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
         this->df[i] = dfCurrent();
     }
     dout<<"beta.size = "<< beta.size() <<endl;
+    this->computeL1Norm();
 }
 
 
@@ -193,13 +194,14 @@ void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double
 
 
 void DEploidLASSO::initialization(size_t nLambda){
-    //this->beta.clear();
+    this->nulldev_ = 0.0;
     this->betaCurrent = vector <double> (this->nVars_, 0.0);
 
     this->lambda = vector <double> (nLambda, 0.0);
     this->intercept = vector <double> (nLambda, 0.0);
     this->devRatio = vector <double> (nLambda, 0.0);
     this->df = vector <int> (nLambda, 0);
+    this->L1norm = vector <double> (nLambda, 0.0);
 
     this->ix = vector <double> (nVars_, 0.0);
     this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
@@ -221,7 +223,6 @@ void DEploidLASSO::initialization(size_t nLambda){
     this->upperLimit = std::numeric_limits<double>::infinity();
 
     this->maxIteration_ = 100000;
-    //this->maxIteration_ = 3000;
     this->thresh_ = 1e-7;
     this->dfmax_ = nVars_ + 1;
     this->mm = vector < size_t > (nVars_, (size_t)0);
@@ -231,36 +232,16 @@ void DEploidLASSO::initialization(size_t nLambda){
     this->npass_ = 0;
     this->setDfCurrent(dfmax_);
     this->nin = 0;
-    //pmax = min(dfmax * 2+20, nvars)
-    //this->nObs_ = nObs;
-
-    //this->vp = vector <double> (nVars, 1.0);
-    //this->vq = vector <double> (nVars, 1.0); // For now ...
-
-      ////if(flmin .ge. 1.0)goto 10771
-            ////eqs=max(eps,flmin)
-            ////alf=eqs**(1.0/(nlam-1))
-////10771 continue
-
-      ////rsq=0.0
-      ////a=0.0
-      ////mm=0
-      ////nlp=0
-      ////nin=nlp
-      ////iz=0
-      ////mnl=min(mnlam,nlam)
-      ////alm=0.0
 }
 
 
-double DEploidLASSO::computeNullDev(vector < vector <double> > &x, vector < double > &wsaf){
+void DEploidLASSO::computeNullDev(vector < vector <double> > &x, vector < double > &wsaf){
     double ybar = sumOfVec(wsaf) / (double)wsaf.size();
     vector <double> ybar_vec = vector <double> (wsaf.size(), ybar);
     vector <double> diff = vecDiff(wsaf, ybar_vec);
     vector <double> tmpSq = vecProd(diff, diff);
-    double ret = sumOfVec( tmpSq );
-    dout << "nulldev = " << ret << endl;
-    return ret;
+    this->nulldev_ = sumOfVec( tmpSq );;
+    dout << "nulldev = " << this->nulldev_ << endl;
 }
 
 
@@ -290,15 +271,10 @@ void DEploidLASSO::lassoGivenLambda(){
     //double omb=1.0-bta; // ridge part, omb = 0
     //double flmin = 1.0; // this is defined in glmnet.R
 
-    //dem=alm*omb
-    //ab=alm*bta
-    //rsq0=rsq
-    //jz=1
-    //tlam=bta*(2.0*alm-alm0)
-
     this->setDfCurrent(0);
     this->jz = 1;
     this->setLambdaCurrentScaled(lambdaCurrent()/this->y_stdv);
+    // tlam=bta*(2.0*alm-alm0)
     double tlam=1.0*(2.0 * lambdaCurrentScaled() - lambdaPrevious()); // beta, bta = 1
 
     this->chooseVariables(tlam);
@@ -564,18 +540,25 @@ double DEploidLASSO::computeGk_abs(vector<double> &y, vector<double> &x){
 
 
 void DEploidLASSO::printResults(){
-    cout << setw(10) << "df"
-         << setw(10) << "rsq"
-         << setw(10) << "lambda" << endl;
+    cout << setw(15) << "TABLE"
+         << setw(15) << "df"
+         << setw(15) << "rsq"
+         << setw(15) << "lambda"
+         << setw(15) << "L1norm" << endl;
     for ( size_t i = 0; i < this->lambda.size(); i++){
-        cout << setw(10) << this->df[i]
-             << setw(10) << this->devRatio[i]
-             << setw(10) << this->lambda[i] << endl;
+        cout << setw(15) << "TABLE"
+             << setw(15) << this->df[i]
+             << setw(15) << this->devRatio[i]
+             << setw(15) << this->lambda[i]
+             << setw(15) << this->L1norm[i] << endl;
     }
 
-    cout << setw(15) << "X_i";
+    cout << setw(15) << "BETA"
+         << setw(15) << "X_i";
     for ( size_t j = 0; j < this->lambda.size(); j++){
-        cout << setw(15) << "beta_{i," << j << "}";
+        string colName = string("beta_{i,") + std::to_string(j) + string("}");
+        cout << setw(15) << "BETA"
+             << setw(15) << colName;
     }
     cout << endl;
 
@@ -585,7 +568,8 @@ void DEploidLASSO::printResults(){
             tmpSum += this->beta[j][i];
         }
         if (tmpSum>0){
-            cout << setw(15) << i;
+            cout << setw(15) << "BETA"
+                 << setw(15) << i;
             for ( size_t j = 0; j < this->lambda.size(); j++){
                 cout << setw(15) << beta[j][i];
             }
@@ -593,4 +577,11 @@ void DEploidLASSO::printResults(){
         }
     }
     cout << endl;
+}
+
+
+void DEploidLASSO::computeL1Norm(){
+    for ( size_t i = 0; i < beta.size(); i++){
+        this->L1norm[i] = sumOfVec(beta[i]);
+    }
 }

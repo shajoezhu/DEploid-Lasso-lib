@@ -139,40 +139,46 @@ class DEploidLASSO{
     void standarization(vector < vector <double> > &x, vector < double > &y);
     void checkVariables(vector < vector <double> > &x);
     void productOfxy();
-    double computeNullDev(vector < vector <double> > &x, vector < double > &y);
+    void computeL1Norm();
+    void computeNullDev(vector < vector <double> > &x, vector < double > &y);
 
    // FOR EACH LAMBDA UPDATE
     void lassoGivenLambda();
 
   // VARIABLES, GETTERS AND SETTERS
    // COMMON
+    // OUTPUT
+    vector < vector <double> > beta; // nLambda x nVars
+    vector < double > lambda; // size of nLambda
+    vector < double > devRatio;
+    vector < double > intercept;
+    vector < int > df;
+    vector < double> L1norm;
+
+    // OTHER VARIABLES
+    // DATA RELATED
     size_t nObs_;
     size_t nVars_;
     vector < vector <double> > standardized_x_transposed; // nVariable x nObs
     vector <double> standardized_y;
-    vector < vector <double> > beta; // nLambda x nVars
-    vector < double > lambda; // size of nLambda
-    vector < size_t > indexArray;
-    vector < size_t > mm; // indicator, that kth variable is already in use
-    size_t nin; // number of variables in use
-    vector < double > devRatio;
-    vector < double > intercept;
-    int maxIteration_;
-    double thresh_;
-    //double absTol_;
-    vector < int > df;
-    double nulldev_;
-    vector <double> ju;
-    vector <double> g;
     vector <double> x_mean;
     vector <double> x_stdv;
     vector <double> x_variance;
     double y_stdv;
     double y_mean;
+    double nulldev_;
+
+    // COMPUTATION RELATED
+    vector < size_t > indexArray;
+    vector < size_t > mm; // indicator, that kth variable is already in use
+    size_t nin; // number of variables in use
+    int maxIteration_;
+    double thresh_;
+    vector <double> ju;
+    vector <double> g;
     size_t dfmax_;
     vector <double> ix;
     int npass_;
-
     double lowerLimit;
     double upperLimit;
 
@@ -212,13 +218,13 @@ class DEploidLASSO{
     void rescaleCoefficents();
     void coefficentToBeta();
     void updateCoefficient(size_t k, double previousCoefficentValue, double gk);
-    double updateYReturnDel(size_t k, double gk, double ak);
     void updateWithNewVariables();
     void updateWithTheSameVariables();
     void updatingCore();
+    void chooseVariables(double tlam);
+    double updateYReturnDel(size_t k, double gk, double ak);
     double computeGk(vector<double> &y, vector<double> &x);
     double computeGk_abs(vector<double> &y, vector<double> &x);
-    void chooseVariables(double tlam);
     double rechooseVariables();
 
    // Debug tools

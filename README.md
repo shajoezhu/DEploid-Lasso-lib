@@ -1,6 +1,6 @@
 # DEploid-Lasso
 
-This is a C++ implemtation of LASSO algorithm in glmnet package.
+This is a C++ implementation of LASSO algorithm in glmnet package.
 
 Method details can be found in
 
