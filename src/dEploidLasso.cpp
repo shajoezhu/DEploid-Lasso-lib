@@ -121,7 +121,6 @@ DEploidLASSO::DEploidLASSO(vector < vector <double> > &x, vector < double > &wsa
         dout << "######### lassoGivenLambda finished at " << npass_ ;
         this->setLambdaPrevious(this->lambdaCurrentScaled());
         //dout << " this->ninCurrent_ "<< this->ninCurrent_ << endl;
-
         // FETCH AND UPDATE THE CURRENT INFERENCE RESULTS
         this->beta.push_back(betaCurrent);
         this->lambda[i] = lambdaCurrent();
