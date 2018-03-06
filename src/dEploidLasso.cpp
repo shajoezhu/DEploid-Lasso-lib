@@ -556,9 +556,8 @@ void DEploidLASSO::printResults(){
     cout << setw(15) << "BETA"
          << setw(15) << "X_i";
     for ( size_t j = 0; j < this->lambda.size(); j++){
-        string colName = string("beta_{i,") + std::to_string(j) + string("}");
-        cout << setw(15) << "BETA"
-             << setw(15) << colName;
+        string colName = string("beta") + std::to_string(j);
+        cout << setw(15) << colName;
     }
     cout << endl;
 
