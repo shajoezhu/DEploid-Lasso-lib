@@ -196,21 +196,21 @@ void DEploidLASSO::standarization(vector < vector <double> > &x, vector < double
 void DEploidLASSO::initialization(size_t nLambda){
     //this->beta.clear();
     this->betaCurrent = vector <double> (this->nVars_, 0.0);
-    this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
 
-    //this->lambda = vector <double> (nLambda, 0.0);
-    //this->intercept = vector <double> (nLambda, 0.0);
-    //this->devRatio = vector <double> (nLambda, 0.0);
-    //this->df = vector <int> (nLambda, 0);
+    this->lambda = vector <double> (nLambda, 0.0);
+    this->intercept = vector <double> (nLambda, 0.0);
+    this->devRatio = vector <double> (nLambda, 0.0);
+    this->df = vector <int> (nLambda, 0);
 
     this->ix = vector <double> (nVars_, 0.0);
+    this->coefficentCurrent = vector <double> (this->nVars_, 0.0);
 
-    for (size_t i = 0; i < nLambda; i++){
-        this->lambda.push_back(0.0);
-        this->intercept.push_back(0.0);
-        this->devRatio.push_back(0.0);
-        this->df.push_back((int)0);
-    }
+    //for (size_t i = 0; i < nLambda; i++){
+        //this->lambda.push_back(0.0);
+        //this->intercept.push_back(0.0);
+        //this->devRatio.push_back(0.0);
+        //this->df.push_back((int)0);
+    //}
 
     this->setRsqCurrent(0.0);
 
@@ -304,7 +304,10 @@ void DEploidLASSO::lassoGivenLambda(){
 
     this->chooseVariables(tlam);
 
-    //this->updatingCore();
+    this->updatingCore();
+
+    // Map coefficients, coefficient -> beta
+    this->coefficentToBeta();
 
     // Rescale coefficients
     this->rescaleCoefficents();
@@ -312,8 +315,6 @@ void DEploidLASSO::lassoGivenLambda(){
     // Compute intercept
     this->computeIntercept();
 
-    // Map coefficients, coefficient -> beta
-    this->coefficentToBeta();
 }
 
 void DEploidLASSO::chooseVariables(double tlam){
@@ -523,7 +524,7 @@ void DEploidLASSO::computeIntercept(){
     double y_remaining = this->y_mean;
     for ( size_t i = 0; i < (size_t)this->nin; i++ ){
         size_t k = indexArray[i];
-        y_remaining -= coefficentCurrent[k] * x_mean[k];
+        y_remaining -= betaCurrent[k] * x_mean[k];
         //dout << "y_remaining "<<y_remaining<<endl;
     }
     this->setInterceptCurrent(y_remaining);
@@ -534,19 +535,21 @@ void DEploidLASSO::rescaleCoefficents(){
     this->dfCurrent_ = 0;
     for ( size_t i = 0; i < (size_t)this->nin; i++ ){
         size_t k = indexArray[i];
-        if ( this->coefficentCurrent[k] > 0){
+        if ( this->betaCurrent[k] > 0){
             this->dfCurrent_ ++;
         }
-        this->coefficentCurrent[k] *= y_stdv;
-        this->coefficentCurrent[k] /= x_stdv[k];
+        this->betaCurrent[k] *= y_stdv;
+        this->betaCurrent[k] /= x_stdv[k];
     }
 }
 
 
 void DEploidLASSO::coefficentToBeta(){
-    for ( size_t i = 0; i < this->nVars_; i++){
-        this->betaCurrent[i] = this->coefficentCurrent[i];
-    }
+    this->betaCurrent = this->coefficentCurrent;
+
+    //for ( size_t i = 0; i < this->nVars_; i++){
+        //this->betaCurrent[i] = this->coefficentCurrent[i];
+    //}
 }
 
 
