@@ -15,6 +15,6 @@ test:
   override:
     - ./bootstrap
     - make check
-    - ./lasso
+    - ./lasso data/panel_chrom1.txt data/PG0402-C_chrom1.wsaf
     - valgrind ./unit_tests
 
