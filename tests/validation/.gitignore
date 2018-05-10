@@ -1,0 +1,15 @@
+# directories
+tmp/
+jasonMixed/
+panels/
+coverage/
+plafs/
+
+# files
+*txt
+*png
+
+# R
+.RData
+*r.Rout
+
