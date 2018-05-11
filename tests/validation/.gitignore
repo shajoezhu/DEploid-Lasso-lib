@@ -9,8 +9,8 @@ haps/
 # files
 *txt
 *png
+*errorCount
 
 # R
 .RData
 *r.Rout
-
