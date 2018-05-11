@@ -41,7 +41,7 @@ POS = PLAF$POS
 i_arr = c(389:415)
 panel = ""
 #panel = ".asiaAfrica"
-for ( idx_i in 19:19 ){
+for ( idx_i in 24:27 ){
     i = i_arr[idx_i]
     sample_i = paste("PG0", i, "-C", sep="")
     prop.tmp = paste(true.prop[[sample_i]][true.prop[[sample_i]]>0], collapse = " ")
