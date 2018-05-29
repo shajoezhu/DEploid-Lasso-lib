@@ -439,3 +439,25 @@ legend("top", legend = c("DEploid (Mixture of 2)", "BEAGLE (Mixture of 2)", "SHA
 
 dev.off()
 
+
+library(dplyr)
+
+mytable_grouped = group_by(mytable, strainName) %>% summarise(., perfect.panel.switchError.m = mean(switchError),
+                                               perfect.panel.missCopy.m = mean(missCopy),
+                                               perfect.panel.dropError.m = mean(dropError) )
+
+merged.tab = merge(mytable_grouped, mytable4)
+
+for (i in c("switchError", "missCopy", "dropError")){
+    x = merged.tab[[i]]
+    y = merged.tab[[paste("perfect.panel.", i, ".m", sep = "")]]
+    png(paste("pefectPanelVsDEploidLasso.", i, ".png", sep = ""))
+    par(mar=c(5,5,2,2))
+    plot(x, y, log="xy", xlim = range(x,y), ylim=range(x,y), xlab = "Perfect panel", ylab = "DEploid-LASSO", main = paste(i, "corr:", round(cor(x,y), digits = 3)), cex.lab = 1.5, cex.main = 1.5)
+    lm1 = lm(y~x)
+    newx <- seq(min(x), max(x), length.out=100)
+    preds <- predict(lm1, newdata = data.frame(x=newx))
+    dev.off()
+#    lines(newx, preds)
+}
+
