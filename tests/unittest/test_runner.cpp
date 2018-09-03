@@ -31,7 +31,12 @@
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 
-using namespace CppUnit;
+using CppUnit::TestResult;
+using CppUnit::TestResultCollector;
+using CppUnit::BriefTestProgressListener;
+using CppUnit::TestRunner;
+using CppUnit::TestFactoryRegistry;
+using CppUnit::CompilerOutputter;
 
 int main(void) {
     TestResult controller;
@@ -43,7 +48,7 @@ int main(void) {
     controller.addListener(&progress);
 
     TestRunner runner;
-    runner.addTest( TestFactoryRegistry::getRegistry().makeTest() );
+    runner.addTest(TestFactoryRegistry::getRegistry().makeTest());
     runner.run(controller);
 
     CompilerOutputter outputter(&result, std::cerr);

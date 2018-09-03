@@ -27,7 +27,8 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
-//#include <exceptions.hpp>
+#include <string>
+// #include <exceptions.hpp>
 
 #ifndef NDEBUG
 #define dout std::cout << "   "
@@ -39,13 +40,21 @@
 #ifndef LASSO
 #define LASSO
 
-using namespace std;
+using std::vector;
+using std::exception;
+using std::string;
+using std::endl;
+using std::cout;
+using std::ifstream;
+using std::min;
+using std::max;
 
 template <typename T>
-vector <T> matrixTimesVec( vector < vector < T > > &x, vector <double> &b ){
-    vector <double> ret (x.size(), 0.0);
-    for ( size_t i = 0; i < x.size(); i++ ){
-        for ( size_t k = 0; k < x[i].size(); k++){
+vector <T> matrixTimesVec(const vector < vector < T > > &x,
+                          const vector <double> &b) {
+    vector <double> ret(x.size(), 0.0);
+    for (size_t i = 0; i < x.size(); i++) {
+        for (size_t k = 0; k < x[i].size(); k++) {
             ret[i] += x[i][k] * b[k];
         }
     }
@@ -54,10 +63,11 @@ vector <T> matrixTimesVec( vector < vector < T > > &x, vector <double> &b ){
 
 
 template <typename T>
-vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
-    //assert(vecA.size() == vecB.size());
-    vector <T> difference (vecA.size(), (T)0);
-    for ( size_t i = 0; i < vecA.size(); i++ ){
+vector <T> vecDiff(const vector<T> &vecA,
+                   const vector<T> &vecB) {
+    // assert(vecA.size() == vecB.size());
+    vector <T> difference(vecA.size(), (T)0);
+    for (size_t i = 0; i < vecA.size(); i++) {
         difference[i] = vecA[i] - vecB[i];
     }
     return difference;
@@ -65,10 +75,10 @@ vector <T> vecDiff ( vector<T> &vecA, vector<T> &vecB ){
 
 
 template <typename T>
-vector <T> vecSum ( vector<T> &vecA, vector<T> &vecB ){
+vector <T> vecSum(const vector<T> &vecA, const vector<T> &vecB ) {
     assert(vecA.size() == vecB.size());
-    vector <T> tmpSum (vecA.size(), (T)0);
-    for ( size_t i = 0; i < vecA.size(); i++ ){
+    vector <T> tmpSum(vecA.size(), (T)0);
+    for (size_t i = 0; i < vecA.size(); i++) {
         tmpSum[i] = vecA[i] + vecB[i];
     }
     return tmpSum;
@@ -76,10 +86,10 @@ vector <T> vecSum ( vector<T> &vecA, vector<T> &vecB ){
 
 
 template <typename T>
-vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
-    //assert(vecA.size() == vecB.size());
-    vector <T> tmpProd (vecA.size(), (T)0);
-    for ( size_t i = 0; i < vecA.size(); i++ ){
+vector <T> vecProd(const vector<T> &vecA, const vector<T> &vecB) {
+    // assert(vecA.size() == vecB.size());
+    vector <T> tmpProd(vecA.size(), (T)0);
+    for (size_t i = 0; i < vecA.size(); i++) {
         tmpProd[i] = vecA[i] * vecB[i];
     }
     return tmpProd;
@@ -87,9 +97,9 @@ vector <T> vecProd ( vector<T> &vecA, vector<T> &vecB ){
 
 
 template <typename T>
-T sumOfVec( vector <T>& array ){
+T sumOfVec(const vector <T>& array) {
     T tmp = 0;
-    for (auto const& value: array){
+    for (auto const& value : array) {
         tmp += value;
     }
     return tmp;
@@ -99,13 +109,13 @@ T sumOfVec( vector <T>& array ){
 class TxtReader{
   friend class DEploidLASSO;
 
-  public:
+ public:
     vector < vector < double > > matrix;
     vector < double > vec;
-    TxtReader (const char inchar[]);
-    ~TxtReader(){ };
+    explicit TxtReader(const char inchar[]);
+    ~TxtReader() {}
 
-  private:
+ private:
 };
 
 
@@ -115,7 +125,7 @@ struct standardizeVector {
     double stdv;
     double variance;
 
-    standardizeVector(vector <double> vec);
+    explicit standardizeVector(vector <double> vec);
     ~standardizeVector(){}
 };
 
@@ -124,33 +134,35 @@ class DEploidLASSO{
 #ifdef UNITTEST
   friend class TestDEploidLASSO;
 #endif
-  public:
-    //DEploidLASSO();
-    DEploidLASSO(vector < vector <double> > &x, // nObs x nVariable
-                 vector < double > &y,
+
+ public:
+    // DEploidLASSO();
+    DEploidLASSO(const vector < vector <double> > &x,  // nObs x nVariable
+                 const vector < double > &y,
                  size_t nLambda = 100);
     ~DEploidLASSO();
     void printResults();
 
-  private:
-
-  // FUNCTIONS
-   // COMMON
+ private:
+    // FUNCTIONS
+    // COMMON
     void initialization(size_t nLambda);
-    void standarization(vector < vector <double> > &x, vector < double > &y);
-    void checkVariables(vector < vector <double> > &x);
+    void standarization(const vector < vector <double> > &x,
+                        const vector < double > &y);
+    void checkVariables(const vector < vector <double> > &x);
     void productOfxy();
     void computeL1Norm();
-    void computeNullDev(vector < vector <double> > &x, vector < double > &y);
+    void computeNullDev(const vector < vector <double> > &x,
+                        const vector < double > &y);
 
-   // FOR EACH LAMBDA UPDATE
+    // FOR EACH LAMBDA UPDATE
     void lassoGivenLambda();
 
-  // VARIABLES, GETTERS AND SETTERS
-   // COMMON
+    // VARIABLES, GETTERS AND SETTERS
+    // COMMON
     // OUTPUT
-    vector < vector <double> > beta; // nLambda x nVars
-    vector < double > lambda; // size of nLambda
+    vector < vector <double> > beta;  // nLambda x nVars
+    vector < double > lambda;  // size of nLambda
     vector < double > devRatio;
     vector < double > intercept;
     vector < int > df;
@@ -160,7 +172,7 @@ class DEploidLASSO{
     // DATA RELATED
     size_t nObs_;
     size_t nVars_;
-    vector < vector <double> > standardized_x_transposed; // nVariable x nObs
+    vector < vector <double> > standardized_x_transposed;  // nVariable x nObs
     vector <double> standardized_y;
     vector <double> x_mean;
     vector <double> x_stdv;
@@ -171,8 +183,8 @@ class DEploidLASSO{
 
     // COMPUTATION RELATED
     vector < size_t > indexArray;
-    vector < size_t > mm; // indicator, that kth variable is already in use
-    size_t nin; // number of variables in use
+    vector < size_t > mm;  // indicator, that kth variable is already in use
+    size_t nin;  // number of variables in use
     int maxIteration_;
     double thresh_;
     vector <double> ju;
@@ -183,38 +195,40 @@ class DEploidLASSO{
     double lowerLimit;
     double upperLimit;
 
-   // FOR EACH LAMBDA UPDATE
-   // VARIABLES
-    vector < double > betaCurrent; // size of nVars
-    vector < double > coefficentCurrent; // size of nVars
+    // FOR EACH LAMBDA UPDATE
+    // VARIABLES
+    vector < double > betaCurrent;  // size of nVars
+    vector < double > coefficentCurrent;  // size of nVars
 
     double lambdaCurrent_;
-    void setLambdaCurrent ( const double setTo ){ this->lambdaCurrent_ = setTo; }
-    double lambdaCurrent() const { return this->lambdaCurrent_; }
+    void setLambdaCurrent(const double setTo) {this->lambdaCurrent_ = setTo;}
+    double lambdaCurrent() const {return this->lambdaCurrent_;}
 
     double lambdaPrevious_;
-    void setLambdaPrevious ( const double setTo ){ this->lambdaPrevious_ = setTo; }
-    double lambdaPrevious() const { return this->lambdaPrevious_; }
+    void setLambdaPrevious(const double setTo) {this->lambdaPrevious_ = setTo;}
+    double lambdaPrevious() const {return this->lambdaPrevious_;}
 
     double lambdaCurrentScaled_;
-    void setLambdaCurrentScaled ( const double setTo ){ this->lambdaCurrentScaled_ = setTo; }
-    double lambdaCurrentScaled() const { return this->lambdaCurrentScaled_; }
+    void setLambdaCurrentScaled(const double setTo) {
+        this->lambdaCurrentScaled_ = setTo;}
+    double lambdaCurrentScaled() const {return this->lambdaCurrentScaled_;}
 
     double rsqCurrent_;
-    void setRsqCurrent ( const double setTo ){ this->rsqCurrent_ = setTo; }
+    void setRsqCurrent(const double setTo) {this->rsqCurrent_ = setTo;}
     double rsqCurrent() const { return this->rsqCurrent_; }
 
     double interceptCurrent_;
-    void setInterceptCurrent ( const double setTo ){ this->interceptCurrent_ = setTo; }
+    void setInterceptCurrent(const double setTo) {
+        this->interceptCurrent_ = setTo;}
     double interceptCurrent() const { return this->interceptCurrent_; }
 
     int dfCurrent_;
-    void setDfCurrent ( const int setTo ){ this->dfCurrent_ = setTo; }
-    int dfCurrent() const { return this->dfCurrent_; }
+    void setDfCurrent(const int setTo) {this->dfCurrent_ = setTo;}
+    int dfCurrent() const {return this->dfCurrent_;}
 
-    //int ninCurrent_;
+    // int ninCurrent_;
     int iz, jz;
-   // FUNCTIONS
+    // FUNCTIONS
     void computeIntercept();
     void rescaleCoefficents();
     void coefficentToBeta();
@@ -224,11 +238,11 @@ class DEploidLASSO{
     void updatingCore();
     void chooseVariables(double tlam);
     double updateYReturnDel(size_t k, double gk, double ak);
-    double computeGk(vector<double> &y, vector<double> &x);
-    double computeGk_abs(vector<double> &y, vector<double> &x);
+    double computeGk(const vector<double> &y, const vector<double> &x);
+    double computeGk_abs(const vector<double> &y, const vector<double> &x);
     double rechooseVariables();
 
-   // Debug tools
+    // Debug tools
     bool print_normalized_struff();
     bool print_initial_gk();
     bool print_homogeneous_input();

@@ -24,40 +24,38 @@
  *
  */
 
-#include "dEploidLasso.hpp"
+#include <assert.h>     // assert
 #include <string>
 #include <fstream>      // std::ifstream
 #include <cmath>        // std::abs
-#include <assert.h>     // assert
 #include <limits>       // std::numeric_limits<double>::infinity();
 #include <iomanip>      // std::setw
+#include "dEploidLasso.hpp"
 
 
-
-
-bool DEploidLASSO::print_normalized_struff(){
-    dout<<"First 5 elements of normalized x 5 variables"<<endl;
-    for (size_t i = 0; i < min((size_t)5, nVars_); i++){
+bool DEploidLASSO::print_normalized_struff() {
+    dout <<"First 5 elements of normalized x 5 variables" << endl;
+    for (size_t i = 0; i < min((size_t)5, nVars_); i++) {
         vector<double> xx = this->standardized_x_transposed[i];
-        for (size_t j = 0; j < min((size_t)5, xx.size()); j++){
-            dout << std::setw(9) << xx[j] <<", ";
+        for (size_t j = 0; j < min((size_t)5, xx.size()); j++) {
+            dout << std::setw(9) << xx[j] << ", ";
         }
     }
-    dout<<endl;
+    dout << endl;
 
-    dout<<"First 5 elements of normalized y"<<endl;
-    for (size_t i = 0; i < min((size_t)5, nObs_) ; i++){
-        dout << std::setw(8) << this->standardized_y[i] <<", ";
+    dout << "First 5 elements of normalized y" << endl;
+    for (size_t i = 0; i < min((size_t)5, nObs_) ; i++) {
+        dout << std::setw(8) << this->standardized_y[i] << ", ";
     }
-    dout<<endl;
+    dout << endl;
 
     return(true);
 }
 
 
-bool DEploidLASSO::print_initial_gk(){
-    dout << "Initial gk:"<<endl;
-    for (size_t i = 0; i < min((size_t)5, nVars_); i++){
+bool DEploidLASSO::print_initial_gk() {
+    dout << "Initial gk:" << endl;
+    for (size_t i = 0; i < min((size_t)5, nVars_); i++) {
         dout << g[i] << ", ";
     }
     dout << endl;
@@ -66,11 +64,11 @@ bool DEploidLASSO::print_initial_gk(){
 }
 
 
-bool DEploidLASSO::print_homogeneous_input(){
+bool DEploidLASSO::print_homogeneous_input() {
     // DEBUG MESSAGE
     dout << "Variables: ";
-    for (size_t i = 0; i < this->nVars_; i++){
-        if ( ju[i] == 0 ) {dout << i <<", ";}
+    for (size_t i = 0; i < this->nVars_; i++) {
+        if (ju[i] == 0) {dout << i <<", ";}
     }
     dout << " are homogeneous vectors." << endl;
 

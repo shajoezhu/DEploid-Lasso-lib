@@ -1,0 +1,94 @@
+version: 2.0
+jobs:
+  "14.04":
+    docker:
+      - image: circleci/buildpack-deps:14.04
+    working_directory: /home/circleci/DEploid-Lasso-lib
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: dEploid-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive --remote
+      - run:
+          name: Install dependencies and set path
+          command: |
+           sudo apt-get update
+           curl -fsSL https://git.io/vHGMF | bash
+           sudo apt-get install libcppunit-dev
+           sudo apt-get install valgrind
+      - run:
+           name: Compile
+           command: |
+            ./bootstrap
+            make check
+            ./lasso data/panel_chrom1.txt data/PG0402-C_chrom1.wsaf > /dev/null
+            valgrind ./unit_tests
+
+  "16.04":
+    docker:
+      - image: circleci/buildpack-deps:16.04
+    working_directory: /home/circleci/DEploid-Lasso-lib
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: dEploid-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive --remote
+      - run:
+          name: Install dependencies and set path
+          command: |
+           sudo apt-get update
+           curl -fsSL https://git.io/vHGMF | bash
+           sudo apt-get install libcppunit-dev
+           sudo apt-get install valgrind
+      - run:
+           name: Compile
+           command: |
+            ./bootstrap
+            make check
+            ./lasso data/panel_chrom1.txt data/PG0402-C_chrom1.wsaf > /dev/null
+            valgrind ./unit_tests
+
+  "18.04":
+    docker:
+      - image: circleci/buildpack-deps:18.04
+    working_directory: /home/circleci/DEploid-Lasso-lib
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: dEploid-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive --remote
+      - run:
+          name: Install dependencies and set path
+          command: |
+           sudo apt-get update
+           curl -fsSL https://git.io/vHGMF | bash
+           sudo apt-get install libcppunit-dev
+           sudo apt-get install valgrind
+      - run:
+           name: Compile
+           command: |
+            ./bootstrap
+            make check
+            ./lasso data/panel_chrom1.txt data/PG0402-C_chrom1.wsaf > /dev/null
+            valgrind ./unit_tests
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "14.04"
+      - "16.04"
+      - "18.04"
+
