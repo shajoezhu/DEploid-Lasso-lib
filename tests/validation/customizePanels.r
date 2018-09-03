@@ -60,7 +60,7 @@ dev.explained.sample = c()
 
         outFile = paste("tmp/", sample_i, "_", chrom, ".lasso", sep="")
         system (paste("lasso", panelName, wsafName, ">", outFile))
-
+#print(paste("lasso", panelName, wsafName, ">", outFile))
 #        inFileName = args[1]
 
         system(paste("grep TABLE ", outFile, " > ", outFile, ".TABLE", sep=""))
