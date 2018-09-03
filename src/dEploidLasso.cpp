@@ -34,6 +34,7 @@
 #include "dEploidLasso.hpp"
 
 using std::setw;
+using std::abs;  // THIS IS VERY IMPORTANT! without this line, abs gives int
 
 TxtReader::TxtReader(const char inchar[]) {
     string fileName(inchar);
@@ -50,7 +51,6 @@ TxtReader::TxtReader(const char inchar[]) {
                 field_end = min(min(tmp_line.find(',', field_start),
                                     tmp_line.find('\t', field_start)),
                                     tmp_line.find('\n', field_start));
-
                 string tmp_str = tmp_line.substr(field_start,
                                                  field_end - field_start);
                 contentRow.push_back(strtod(tmp_str.c_str(), NULL));
@@ -101,8 +101,8 @@ standardizeVector::standardizeVector(vector <double> vec) {
 }
 
 
-DEploidLASSO::DEploidLASSO(vector < vector <double> > &x,
-    vector < double > &wsaf, size_t nLambda) {
+DEploidLASSO::DEploidLASSO(const vector < vector <double> > &x,
+    const vector < double > &wsaf, size_t nLambda) {
     this->nVars_ = x[0].size();
     this->nObs_ = x.size();
 
@@ -154,7 +154,7 @@ void DEploidLASSO::productOfxy() {
 }
 
 
-void DEploidLASSO::checkVariables(vector < vector <double> > &x) {
+void DEploidLASSO::checkVariables(const vector < vector <double> > &x) {
     // check for homogeneous vectors
     this->ju = vector <double> (this->nVars_, 0.0);
     for (size_t i = 0; i < this->nVars_; i++) {
@@ -169,8 +169,8 @@ void DEploidLASSO::checkVariables(vector < vector <double> > &x) {
 }
 
 
-void DEploidLASSO::standarization(vector < vector <double> > &x,
-                                  vector < double > &y) {
+void DEploidLASSO::standarization(const vector < vector <double> > &x,
+                                  const vector < double > &y) {
     // standarize x
     assert(standardized_x_transposed.size() == 0);
     assert(x_stdv.size() == 0);
@@ -241,8 +241,8 @@ void DEploidLASSO::initialization(size_t nLambda) {
 }
 
 
-void DEploidLASSO::computeNullDev(vector < vector <double> > &x,
-                                  vector < double > &wsaf) {
+void DEploidLASSO::computeNullDev(const vector < vector <double> > &x,
+                                  const vector < double > &wsaf) {
     double ybar = sumOfVec(wsaf) / static_cast<double>(wsaf.size());
     vector <double> ybar_vec = vector <double> (wsaf.size(), ybar);
     vector <double> diff = vecDiff(wsaf, ybar_vec);
@@ -383,6 +383,7 @@ void DEploidLASSO::updateWithNewVariables() {
 
         dout << " ** Convergence check, dlx was " << dlx;
         dlx = max(x_variance[k]*del*del, dlx);
+        cout << dlx <<endl;
         dout << " updated to " << dlx << endl;
     }
 
@@ -546,15 +547,15 @@ void DEploidLASSO::coefficentToBeta() {
 }
 
 
-double DEploidLASSO::computeGk(vector<double> &y,
-                               vector<double> &x) {
+double DEploidLASSO::computeGk(const vector<double> &y,
+                               const vector<double> &x) {
     vector <double> gk_vec = vecProd(y, x);
     return sumOfVec(gk_vec);
 }
 
 
-double DEploidLASSO::computeGk_abs(vector<double> &y,
-                                   vector<double> &x) {
+double DEploidLASSO::computeGk_abs(const vector<double> &y,
+                                   const vector<double> &x) {
     return abs(computeGk(y, x));
 }
 
