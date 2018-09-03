@@ -31,7 +31,13 @@
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 
-using namespace CppUnit;
+//using namespace CppUnit;
+using CppUnit::TestResult;
+using CppUnit::TestResultCollector;
+using CppUnit::BriefTestProgressListener;
+using CppUnit::CompilerOutputter;
+using CppUnit::TestFactoryRegistry;
+using CppUnit::TestRunner;
 
 int main(void) {
     TestResult controller;

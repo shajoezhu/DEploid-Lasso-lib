@@ -138,8 +138,8 @@ class DEploidLASSO{
 
  public:
     // DEploidLASSO();
-    DEploidLASSO(const vector < vector <double> > &x,  // nObs x nVariable
-                 const vector < double > &y,
+    DEploidLASSO(vector < vector <double> > &x,  // nObs x nVariable
+                 vector < double > &y,
                  size_t nLambda = 100);
     ~DEploidLASSO();
     void printResults();
@@ -148,13 +148,13 @@ class DEploidLASSO{
     // FUNCTIONS
     // COMMON
     void initialization(size_t nLambda);
-    void standarization(const vector < vector <double> > &x,
-                        const vector < double > &y);
-    void checkVariables(const vector < vector <double> > &x);
+    void standarization(vector < vector <double> > &x,
+                        vector < double > &y);
+    void checkVariables(vector < vector <double> > &x);
     void productOfxy();
     void computeL1Norm();
-    void computeNullDev(const vector < vector <double> > &x,
-                        const vector < double > &y);
+    void computeNullDev(vector < vector <double> > &x,
+                        vector < double > &y);
 
     // FOR EACH LAMBDA UPDATE
     void lassoGivenLambda();
@@ -239,8 +239,8 @@ class DEploidLASSO{
     void updatingCore();
     void chooseVariables(double tlam);
     double updateYReturnDel(size_t k, double gk, double ak);
-    double computeGk(const vector<double> &y, const vector<double> &x);
-    double computeGk_abs(const vector<double> &y, const vector<double> &x);
+    double computeGk(vector<double> &y, vector<double> &x);
+    double computeGk_abs(vector<double> &y, vector<double> &x);
     double rechooseVariables();
 
     // Debug tools
