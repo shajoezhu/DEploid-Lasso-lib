@@ -383,7 +383,6 @@ void DEploidLASSO::updateWithNewVariables() {
 
         dout << " ** Convergence check, dlx was " << dlx;
         dlx = max(x_variance[k]*del*del, dlx);
-        cout << dlx <<endl;
         dout << " updated to " << dlx << endl;
     }
 
