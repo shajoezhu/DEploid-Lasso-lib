@@ -33,6 +33,7 @@
 #include <iomanip>      // std::setw
 #include "dEploidLasso.hpp"
 
+using std::setw;
 
 TxtReader::TxtReader(const char inchar[]) {
     string fileName(inchar);
@@ -100,8 +101,8 @@ standardizeVector::standardizeVector(vector <double> vec) {
 }
 
 
-DEploidLASSO::DEploidLASSO(vector < vector <double> > &x,
-    vector < double > &wsaf, size_t nLambda) {
+DEploidLASSO::DEploidLASSO(const vector < vector <double> > &x,
+    const vector < double > &wsaf, size_t nLambda) {
     this->nVars_ = x[0].size();
     this->nObs_ = x.size();
 
@@ -153,7 +154,7 @@ void DEploidLASSO::productOfxy() {
 }
 
 
-void DEploidLASSO::checkVariables(vector < vector <double> > &x) {
+void DEploidLASSO::checkVariables(const vector < vector <double> > &x) {
     // check for homogeneous vectors
     this->ju = vector <double> (this->nVars_, 0.0);
     for (size_t i = 0; i < this->nVars_; i++) {
@@ -168,8 +169,8 @@ void DEploidLASSO::checkVariables(vector < vector <double> > &x) {
 }
 
 
-void DEploidLASSO::standarization(vector < vector <double> > &x,
-                                  vector < double > &y) {
+void DEploidLASSO::standarization(const vector < vector <double> > &x,
+                                  const vector < double > &y) {
     // standarize x
     assert(standardized_x_transposed.size() == 0);
     assert(x_stdv.size() == 0);
@@ -240,8 +241,8 @@ void DEploidLASSO::initialization(size_t nLambda) {
 }
 
 
-void DEploidLASSO::computeNullDev(vector < vector <double> > &x,
-                                  vector < double > &wsaf) {
+void DEploidLASSO::computeNullDev(const vector < vector <double> > &x,
+                                  const vector < double > &wsaf) {
     double ybar = sumOfVec(wsaf) / static_cast<double>(wsaf.size());
     vector <double> ybar_vec = vector <double> (wsaf.size(), ybar);
     vector <double> diff = vecDiff(wsaf, ybar_vec);
@@ -545,13 +546,15 @@ void DEploidLASSO::coefficentToBeta() {
 }
 
 
-double DEploidLASSO::computeGk(vector<double> &y, vector<double> &x) {
+double DEploidLASSO::computeGk(const vector<double> &y,
+                               const vector<double> &x) {
     vector <double> gk_vec = vecProd(y, x);
     return sumOfVec(gk_vec);
 }
 
 
-double DEploidLASSO::computeGk_abs(vector<double> &y, vector<double> &x) {
+double DEploidLASSO::computeGk_abs(const vector<double> &y,
+                                   const vector<double> &x) {
     return abs(computeGk(y, x));
 }
 
