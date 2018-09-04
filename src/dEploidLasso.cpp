@@ -34,7 +34,8 @@
 #include "dEploidLasso.hpp"
 
 using std::setw;
-using std::abs;  // THIS IS VERY IMPORTANT! without this line, abs gives int
+// using std::abs;  // THIS IS VERY IMPORTANT! without this line, abs gives int
+// NOW using fabs instead
 
 TxtReader::TxtReader(const char inchar[]) {
     string fileName(inchar);
@@ -470,9 +471,9 @@ void DEploidLASSO::updateCoefficient(size_t k, double previousCoefficentValue,
     double u = gk + previousCoefficentValue * x_variance[k];
     // u=gk+ak*xv(k)
     // u=gk+ak*xv(k)
-    double v = abs(u) - 1.0 * lambdaCurrentScaled();
-    // v=abs(u)-vp(k)*ab
-    // v=abs(u)-vp(k)*ab
+    double v = fabs(u) - 1.0 * lambdaCurrentScaled();
+    // v=fabs(u)-vp(k)*ab
+    // v=fabs(u)-vp(k)*ab
 
     dout << "  ** Update coefficient" << endl;
     dout << "     Check if " << lambdaCurrentScaled()
@@ -555,7 +556,7 @@ double DEploidLASSO::computeGk(const vector<double> &y,
 
 double DEploidLASSO::computeGk_abs(const vector<double> &y,
                                    const vector<double> &x) {
-    return abs(computeGk(y, x));
+    return fabs(computeGk(y, x));
 }
 
 

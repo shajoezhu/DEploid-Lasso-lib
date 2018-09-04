@@ -27,7 +27,6 @@
 #include <assert.h>     // assert
 #include <string>
 #include <fstream>      // std::ifstream
-#include <cmath>        // std::abs
 #include <limits>       // std::numeric_limits<double>::infinity();
 #include <iomanip>      // std::setw
 #include "dEploidLasso.hpp"
