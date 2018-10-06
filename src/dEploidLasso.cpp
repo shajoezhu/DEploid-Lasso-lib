@@ -37,7 +37,7 @@ using std::setw;
 // using std::abs;  // THIS IS VERY IMPORTANT! without this line, abs gives int
 // NOW using fabs instead
 
-TxtReader::TxtReader(const char inchar[]) {
+lasso::TxtReader::TxtReader(const char inchar[]) {
     string fileName(inchar);
     ifstream in_file(inchar);
     string tmp_line;

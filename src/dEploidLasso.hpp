@@ -105,7 +105,7 @@ T sumOfVec(const vector <T>& array) {
     return tmp;
 }
 
-
+namespace lasso{
 class TxtReader{
   friend class DEploidLASSO;
 
@@ -117,7 +117,7 @@ class TxtReader{
 
  private:
 };
-
+}
 
 struct standardizeVector {
     vector <double> ret;
