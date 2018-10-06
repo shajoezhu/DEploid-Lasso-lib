@@ -29,7 +29,7 @@
 
 int main(int argc, char *argv[]) {
     try {
-        vector < vector <double> > matrix = TxtReader(argv[1]).matrix;
+        vector < vector <double> > matrix = lasso::TxtReader(argv[1]).matrix;
         vector < double > wsaf = lasso::TxtReader(argv[2]).vec;
         // vector < vector <double> > matrix =
                 // TxtReader ("data/panel_chrom1.txt").matrix;
