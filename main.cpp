@@ -30,7 +30,7 @@
 int main(int argc, char *argv[]) {
     try {
         vector < vector <double> > matrix = TxtReader(argv[1]).matrix;
-        vector < double > wsaf = TxtReader(argv[2]).vec;
+        vector < double > wsaf = lasso::TxtReader(argv[2]).vec;
         // vector < vector <double> > matrix =
                 // TxtReader ("data/panel_chrom1.txt").matrix;
         // vector < double > wsaf = TxtReader ("data/PG0402-C_chrom1.wsaf").vec;
