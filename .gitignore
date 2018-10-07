@@ -63,3 +63,8 @@ test_coverage/
 # Output
 *.BETA
 *.TABLE
+
+# Build
+lasso
+lasso_dbg
+lasso_prof
