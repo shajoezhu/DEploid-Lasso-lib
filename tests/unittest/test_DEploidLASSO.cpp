@@ -52,8 +52,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
     }
 
     void testConstructor() {
-        vector < vector <double> > matrix = TxtReader("data/myX.txt").matrix;
-        vector < double > wsaf = TxtReader("data/myy.txt").vec;
+        vector < vector <double> > matrix = lasso::TxtReader("data/myX.txt").matrix;
+        vector < double > wsaf = lasso::TxtReader("data/myy.txt").vec;
         dummy = new DEploidLASSO(matrix, wsaf, 2);
         delete dummy;
         DEploidLASSO dummy0(matrix, wsaf, 0);
@@ -64,8 +64,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
 
 
     void testValues() {
-        vector < vector <double> > matrix = TxtReader("data/myX.txt").matrix;
-        vector < double > wsaf = TxtReader("data/myy.txt").vec;
+        vector < vector <double> > matrix = lasso::TxtReader("data/myX.txt").matrix;
+        vector < double > wsaf = lasso::TxtReader("data/myy.txt").vec;
 
         DEploidLASSO dummy3(matrix, wsaf, 3);
     // Call:  glmnet(x = truex, y = y, lambda = 1/seq(3, 5, length.out = 3),
@@ -96,8 +96,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
 
     void testValues2(){
         vector < vector <double> > matrix =
-            TxtReader("data/panel_chrom1.txt").matrix;
-        vector < double > wsaf = TxtReader("data/PG0402-C_chrom1.wsaf").vec;
+            lasso::TxtReader("data/panel_chrom1.txt").matrix;
+        vector < double > wsaf = lasso::TxtReader("data/PG0402-C_chrom1.wsaf").vec;
 
         DEploidLASSO dummy3(matrix, wsaf, 100);
     }

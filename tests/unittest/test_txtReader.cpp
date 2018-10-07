@@ -35,13 +35,13 @@ class TestTextReader : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE_END();
 
  private:
-        TxtReader *readerDummy_ptrX;
-        TxtReader *readerDummy_ptrY;
+        lasso::TxtReader *readerDummy_ptrX;
+        lasso::TxtReader *readerDummy_ptrY;
 
  public:
     void setUp() {
-        readerDummy_ptrX = new TxtReader("data/myX.txt");
-        readerDummy_ptrY = new TxtReader("data/myy.txt");
+        readerDummy_ptrX = new lasso::TxtReader("data/myX.txt");
+        readerDummy_ptrY = new lasso::TxtReader("data/myy.txt");
     }
 
     void tearDown() {
@@ -49,10 +49,10 @@ class TestTextReader : public CppUnit::TestCase {
     }
 
     void testMainConstructor() {
-        TxtReader panel("data/panel_chrom1.txt");
+        lasso::TxtReader panel("data/panel_chrom1.txt");
         CPPUNIT_ASSERT_EQUAL(panel.matrix.size(), (size_t)625);
         CPPUNIT_ASSERT_EQUAL(panel.matrix[0].size(), (size_t)94);
-        TxtReader wsaf("data/PG0402-C_chrom1.wsaf");
+        lasso::TxtReader wsaf("data/PG0402-C_chrom1.wsaf");
         CPPUNIT_ASSERT_EQUAL(wsaf.vec.size(), (size_t)625);
     }
 

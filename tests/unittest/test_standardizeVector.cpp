@@ -40,7 +40,7 @@ class TestStandardizeVector : public CppUnit::TestCase {
 
  public:
     void setUp() {
-        dummy = new standardizeVector(TxtReader("data/myy.txt").vec);
+        dummy = new standardizeVector(lasso::TxtReader("data/myy.txt").vec);
         this->epsilon6 = 0.000001;
         this->epsilon5 = 0.00001;
     }
