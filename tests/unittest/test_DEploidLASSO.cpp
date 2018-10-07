@@ -52,7 +52,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
     }
 
     void testConstructor() {
-        vector < vector <double> > matrix = lasso::TxtReader("data/myX.txt").matrix;
+        vector < vector <double> > matrix =
+            lasso::TxtReader("data/myX.txt").matrix;
         vector < double > wsaf = lasso::TxtReader("data/myy.txt").vec;
         dummy = new DEploidLASSO(matrix, wsaf, 2);
         delete dummy;
@@ -64,7 +65,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
 
 
     void testValues() {
-        vector < vector <double> > matrix = lasso::TxtReader("data/myX.txt").matrix;
+        vector < vector <double> > matrix =
+            lasso::TxtReader("data/myX.txt").matrix;
         vector < double > wsaf = lasso::TxtReader("data/myy.txt").vec;
 
         DEploidLASSO dummy3(matrix, wsaf, 3);
@@ -97,7 +99,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
     void testValues2(){
         vector < vector <double> > matrix =
             lasso::TxtReader("data/panel_chrom1.txt").matrix;
-        vector < double > wsaf = lasso::TxtReader("data/PG0402-C_chrom1.wsaf").vec;
+        vector < double > wsaf =
+            lasso::TxtReader("data/PG0402-C_chrom1.wsaf").vec;
 
         DEploidLASSO dummy3(matrix, wsaf, 100);
     }
