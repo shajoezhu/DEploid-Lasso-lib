@@ -31,7 +31,7 @@ DEploidLASSO::DEploidLASSO(const vector < vector <double> > &x,
     const vector < double > &wsaf, size_t nLambda) : Lasso(x, wsaf, nLambda) {
     this->setChoiceAt(nLambda-1);
     this->determineTheCutOff();
-    this->shrinkThePanel();
+    this->shrinkThePanel(x);
 }
 
 
@@ -40,10 +40,10 @@ void DEploidLASSO::determineTheCutOff() {
         return;
     }
 
-    for (size_t i = 0; i < (this->lambda.size()-1); i++) {
-        double diff = (this->devRatio[i+1] - this->devRatio[i]) /
+    for (size_t i = 1; i < (this->lambda.size()); i++) {
+        double diff = (this->devRatio[i] - this->devRatio[i-1]) /
                       this->devRatio.back();
-        if (diff < 0.001) {
+        if ((this->devRatio[i] > 0) & (diff < 0.001)) {
             this->setChoiceAt(i);
             break;
         }
@@ -51,9 +51,15 @@ void DEploidLASSO::determineTheCutOff() {
 }
 
 
-void DEploidLASSO::shrinkThePanel() {
+void DEploidLASSO::shrinkThePanel(const vector < vector <double> > &x) {
     if (this->lambda.size() == 0) {
         return;
+    }
+
+    // Initialize reduced panel;
+    for (size_t j = 0; j < x.size(); j++) {
+        vector <double> emptyRow;
+        reducedPanel.push_back(emptyRow);
     }
 
     vector <double> candidateBetas = this->beta[this->choiceAt()];
@@ -62,6 +68,9 @@ void DEploidLASSO::shrinkThePanel() {
             choiceIdx.push_back(i);
             choiceBeta.push_back(candidateBetas[i]);
             // cout <<  choiceBeta.back() << endl;
+            for (size_t j = 0; j < x.size(); j++) {
+                reducedPanel[j].push_back(x[j][i]);
+            }
         }
     }
 }

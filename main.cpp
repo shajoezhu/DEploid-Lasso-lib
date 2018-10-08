@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
                 // TxtReader ("data/myX.txt").matrix;
         // vector < double > wsaf = TxtReader ("data/myy.txt").vec;
         Lasso dummy(matrix, wsaf, 250);
-        // dummy.printResults();
+        dummy.printResults();
         matrix.clear();
         wsaf.clear();
         return EXIT_SUCCESS;

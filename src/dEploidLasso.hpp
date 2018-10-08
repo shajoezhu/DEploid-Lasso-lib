@@ -37,6 +37,7 @@ class DEploidLASSO : public Lasso {
 #ifdef UNITTEST
   friend class TestDEploidLASSO;
 #endif
+  friend class DEploidIO;
 
  public:
     // DEploidLASSO();
@@ -54,7 +55,8 @@ class DEploidLASSO : public Lasso {
 
     // selections
     void determineTheCutOff();
-    void shrinkThePanel();
+    void shrinkThePanel(const vector < vector <double> > &x);
+    vector < vector <double> > reducedPanel;
 };
 
 
