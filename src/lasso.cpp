@@ -31,7 +31,7 @@
 #include <limits>       // std::numeric_limits<double>::infinity();
 #include <algorithm>    // for min
 #include <iomanip>      // std::setw
-#include "dEploidLasso.hpp"
+#include "lasso.hpp"
 
 using std::setw;
 // using std::abs;  // THIS IS VERY IMPORTANT! without this line, abs gives int
@@ -605,27 +605,3 @@ void Lasso::computeL1Norm() {
         this->L1norm[i] = sumOfVec(beta[i]);
     }
 }
-
-
-//void Lasso::determineTheCutOff() {
-    //for (size_t i = 1; i < this->lambda.size(); i++) {
-        //double diff = (this->devRatio[i] - this->devRatio[i-1]) /
-                      //this->devRatio.back();
-        //if (diff < 0.001) {
-            //this->setChoiceAt(i);
-            //break;
-        //}
-    //}
-//}
-
-
-//void Lasso::shrinkThePanel() {
-    //vector <double> candidateBetas = this->beta[this->choiceAt()];
-    //for (size_t i = 0; i < candidateBetas.size(); i++) {
-        //if (candidateBetas[i] > 0) {
-            //choiceIdx.push_back(i);
-            //choiceBeta.push_back(candidateBetas[i]);
-            //cout <<  choiceBeta.back() << endl;
-        //}
-    //}
-//}

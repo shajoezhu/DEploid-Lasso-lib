@@ -68,3 +68,4 @@ test_coverage/
 lasso
 lasso_dbg
 lasso_prof
+lint_tmp

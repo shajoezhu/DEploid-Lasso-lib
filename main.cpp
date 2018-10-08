@@ -38,8 +38,8 @@ int main(int argc, char *argv[]) {
         // vector < vector <double> > matrix =
                 // TxtReader ("data/myX.txt").matrix;
         // vector < double > wsaf = TxtReader ("data/myy.txt").vec;
-        DEploidLASSO dummy(matrix, wsaf, 250);
-        //dummy.printResults();
+        Lasso dummy(matrix, wsaf, 250);
+        // dummy.printResults();
         matrix.clear();
         wsaf.clear();
         return EXIT_SUCCESS;

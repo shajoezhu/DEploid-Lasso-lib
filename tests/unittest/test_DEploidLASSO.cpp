@@ -30,8 +30,8 @@
 
 class TestDEploidLASSO : public CppUnit::TestCase {
     CPPUNIT_TEST_SUITE(TestDEploidLASSO);
-    //CPPUNIT_TEST(testValues);
-    //CPPUNIT_TEST(testValues2);
+    CPPUNIT_TEST(testValues);
+    CPPUNIT_TEST(testValues2);
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST_SUITE_END();
 
@@ -60,6 +60,8 @@ class TestDEploidLASSO : public CppUnit::TestCase {
         DEploidLASSO dummy0(matrix, wsaf, 0);
         DEploidLASSO dummy1(matrix, wsaf, 1);
         CPPUNIT_ASSERT_NO_THROW(dummy1.printResults());
+        DEploidLASSO dummy2(matrix, wsaf, 2);
+        CPPUNIT_ASSERT_NO_THROW(dummy2.printResults());
     }
 
 
