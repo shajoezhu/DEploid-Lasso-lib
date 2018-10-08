@@ -32,7 +32,7 @@
 #include "dEploidLasso.hpp"
 
 
-bool DEploidLASSO::print_normalized_struff() {
+bool Lasso::print_normalized_struff() {
     dout <<"First 5 elements of normalized x 5 variables" << endl;
     for (size_t i = 0; i < min((size_t)5, nVars_); i++) {
         vector<double> xx = this->standardized_x_transposed[i];
@@ -52,7 +52,7 @@ bool DEploidLASSO::print_normalized_struff() {
 }
 
 
-bool DEploidLASSO::print_initial_gk() {
+bool Lasso::print_initial_gk() {
     dout << "Initial gk:" << endl;
     for (size_t i = 0; i < min((size_t)5, nVars_); i++) {
         dout << g[i] << ", ";
@@ -63,7 +63,7 @@ bool DEploidLASSO::print_initial_gk() {
 }
 
 
-bool DEploidLASSO::print_homogeneous_input() {
+bool Lasso::print_homogeneous_input() {
     // DEBUG MESSAGE
     dout << "Variables: ";
     for (size_t i = 0; i < this->nVars_; i++) {

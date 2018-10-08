@@ -12,9 +12,9 @@ PROG = DEPLOID
 
 common_flags = -std=c++11 -Isrc/ -DDEPLOIDLASSOVERSION=\"${DEPLOIDLASSOVERSION}\" -DCOMPILEDATE=\"${COMPILEDATE}\"
 
-common_src = src/dEploidLasso.cpp
+common_src = src/dEploidLasso.cpp src/lasso.cpp
 
-debug_src = src/dEploidLassoDBG.cpp
+debug_src = src/lassoDBG.cpp
 
 lasso_SOURCES = main.cpp $(common_src)
 lasso_dbg_SOURCES =  $(debug_src) $(lasso_SOURCES)

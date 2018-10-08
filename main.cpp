@@ -25,6 +25,7 @@
  */
 
 #include <iostream>  // std::cout
+#include "lasso.hpp"
 #include "dEploidLasso.hpp"
 
 int main(int argc, char *argv[]) {
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
                 // TxtReader ("data/myX.txt").matrix;
         // vector < double > wsaf = TxtReader ("data/myy.txt").vec;
         DEploidLASSO dummy(matrix, wsaf, 250);
-        dummy.printResults();
+        //dummy.printResults();
         matrix.clear();
         wsaf.clear();
         return EXIT_SUCCESS;
