@@ -73,16 +73,18 @@ lasso::TxtReader::TxtReader(const char inchar[]) {
 standardizeVector::standardizeVector(vector <double> vec) {
     assert(ret.size() == 0);
     size_t nObs_ = vec.size();
-    this->mean = sumOfVec(vec) / static_cast<double>(nObs_);
+    this->mean = lasso::sumOfVec(vec) / static_cast<double>(nObs_);
     vector <double> mean_vec = vector <double> (nObs_, mean);
-    vector <double> vec_diff = vecDiff(vec, mean_vec);  // (y-ym)
+    vector <double> vec_diff = lasso::vecDiff(vec, mean_vec);  // (y-ym)
 
     vector <double> v_vec = vector <double> (nObs_,
                                          1.0/sqrt(static_cast<double>(nObs_)));
-    vector <double> v_times_vec_diff = vecProd(vec_diff, v_vec);  // y=v*(y-ym)
+    vector <double> v_times_vec_diff = lasso::vecProd(vec_diff, v_vec);
+    // y=v*(y-ym)
 
-    vector <double> tmpProd = vecProd(v_times_vec_diff, v_times_vec_diff);
-    this->variance = sumOfVec(tmpProd);
+    vector <double> tmpProd = lasso::vecProd(v_times_vec_diff,
+                                             v_times_vec_diff);
+    this->variance = lasso::sumOfVec(tmpProd);
     // this->variance = sumOfVec(tmpProd)/(nObs_);
     this->stdv = sqrt(this->variance);
 
@@ -244,11 +246,11 @@ void Lasso::initialization(size_t nLambda) {
 
 void Lasso::computeNullDev(const vector < vector <double> > &x,
                                   const vector < double > &wsaf) {
-    double ybar = sumOfVec(wsaf) / static_cast<double>(wsaf.size());
+    double ybar = lasso::sumOfVec(wsaf) / static_cast<double>(wsaf.size());
     vector <double> ybar_vec = vector <double> (wsaf.size(), ybar);
-    vector <double> diff = vecDiff(wsaf, ybar_vec);
-    vector <double> tmpSq = vecProd(diff, diff);
-    this->nulldev_ = sumOfVec(tmpSq);
+    vector <double> diff = lasso::vecDiff(wsaf, ybar_vec);
+    vector <double> tmpSq = lasso::vecProd(diff, diff);
+    this->nulldev_ = lasso::sumOfVec(tmpSq);
     dout << "nulldev = " << this->nulldev_ << endl;
 }
 
@@ -549,8 +551,8 @@ void Lasso::coefficentToBeta() {
 
 double Lasso::computeGk(const vector<double> &y,
                                const vector<double> &x) {
-    vector <double> gk_vec = vecProd(y, x);
-    return sumOfVec(gk_vec);
+    vector <double> gk_vec = lasso::vecProd(y, x);
+    return lasso::sumOfVec(gk_vec);
 }
 
 
@@ -602,6 +604,6 @@ void Lasso::printResults() {
 
 void Lasso::computeL1Norm() {
     for (size_t i = 0; i < beta.size(); i++) {
-        this->L1norm[i] = sumOfVec(beta[i]);
+        this->L1norm[i] = lasso::sumOfVec(beta[i]);
     }
 }

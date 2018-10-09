@@ -49,6 +49,7 @@ using std::ifstream;
 using std::min;
 using std::max;
 
+namespace lasso {
 template <typename T>
 vector <T> matrixTimesVec(const vector < vector < T > > &x,
                           const vector <double> &b) {
@@ -105,7 +106,6 @@ T sumOfVec(const vector <T>& array) {
     return tmp;
 }
 
-namespace lasso {
 class TxtReader{
   friend class Lasso;
 
