@@ -1,1 +1,1 @@
-brew llvm cppunit
+brew "cppunit"
