@@ -13,7 +13,7 @@ before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then apt-cache policy zlib*; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then .ci/style.sh; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew bundle; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit ; fi
+  #- if [ $TRAVIS_OS_NAME == osx ]; then brew install llvm cppunit ; fi
 
 before_script:
   - ./bootstrap
