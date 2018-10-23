@@ -113,6 +113,10 @@ Lasso::Lasso(const vector < vector <double> > &x,
     dout<< "Matrix size = "<< this->nObs_ << " " << this->nVars_ << endl;
     dout<< "Vector length = " << wsaf.size() << endl;
 
+    if (this->nObs_ != wsaf.size()) {
+        throw lasso::InvalidInput("Lasso matrix and vector size incompatible!");
+    }
+
     // Initialize
 
     this->initialization(nLambda);

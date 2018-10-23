@@ -28,6 +28,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <exception>
 #include "dbgmacro.hpp"
 
 
@@ -44,6 +45,27 @@ using std::min;
 using std::max;
 
 namespace lasso {
+struct InvalidInput : std::exception {
+    //string src;
+    //string reason;
+    string throwMsg;
+
+    InvalidInput() {
+        //this->src      = "";
+        //this->reason   = "";
+    }
+
+    explicit InvalidInput(string str) {
+        this->throwMsg      = "\033[1;31m" + str + "\033[0m";
+        //this->reason   = "";
+    }
+    virtual ~InvalidInput() throw() {}
+    virtual const char* what() const noexcept {
+        return throwMsg.c_str();
+    }
+};
+
+
 template <typename T>
 vector <T> matrixTimesVec(const vector < vector < T > > &x,
                           const vector <double> &b) {
@@ -242,6 +264,4 @@ class Lasso{
     bool print_initial_gk();
     bool print_homogeneous_input();
 };
-
-
-#endif
+#endif  // LASSO
