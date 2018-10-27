@@ -146,7 +146,7 @@ class Lasso{
   friend class TestDEploidLASSO;
 #endif
   friend class DEploidLASSO;
-
+  friend class DEploidIO;
  public:
     // Lasso();
     Lasso(const vector < vector <double> > &x,  // nObs x nVariable
