@@ -29,6 +29,7 @@
 #include <sstream>
 #include <string>
 #include <exception>
+#include <algorithm>
 #include "dbgmacro.hpp"
 
 
