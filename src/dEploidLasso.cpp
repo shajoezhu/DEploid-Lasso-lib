@@ -41,13 +41,16 @@ void DEploidLASSO::determineTheCutOff() {
     }
 
     for (size_t i = 1; i < (this->lambda.size()); i++) {
+        // cout << this->devRatio[i] << "\t";
         double diff = (this->devRatio[i] - this->devRatio[i-1]) /
                       this->devRatio.back();
-        if ((this->devRatio[i] > 0) & (diff < 0.001)) {
+        if (((this->devRatio[i] > 0) & (diff < 0.001))) {
+                // this->devRatio[i] > 0.85 ) {
             this->setChoiceAt(i);
             break;
         }
     }
+    // cout << endl;
 }
 
 
@@ -64,7 +67,7 @@ void DEploidLASSO::shrinkThePanel(const vector < vector <double> > &x) {
 
     vector <double> candidateBetas = this->beta[this->choiceAt()];
     for (size_t i = 0; i < candidateBetas.size(); i++) {
-        if (candidateBetas[i] > 0) {
+        if (candidateBetas[i] > 0.01) {
             choiceIdx.push_back(i);
             choiceBeta.push_back(candidateBetas[i]);
             // cout <<  choiceBeta.back() << endl;
